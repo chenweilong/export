@@ -188,17 +188,30 @@ public class ExportToday {
         Collection<File> list = getExportableFiles(botName,includeBot,includeSection,
                                                includeNlog,includeUtil,startDate);
 
-        Collection<File> listWithSameNmaes = new Collection<File>();
-        if(filesHasSameName(list,listWithSameNmaes)){
-            
+        // Collection<File> listWithSameNmaes = new Collection<File>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        } else {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-            String target = "D:\\today\\" + sdf.format(getToday()) + "\\" + botName + "\\";
+        String target = "D:\\today\\" + sdf.format(getToday()) + "\\" + botName + "\\";
         
-            return copyFilesToDirectory(list,target);
+
+        if(filesHasSameName(list)){
+            File[][] groupedFiles = groupFileBySameName();
+            //save file withou same name;
+            String result = copyFilesToDirectory(Arrays.asList(groupedFiles[0],target));
+            for(int i = 1 ; i<groupedFiles.length; i++){
+                for(int j = 0; j<groupedFiles[i].length; j++){
+                    if(groupedFiles[i][j] != null){
+                        FileUtils.copyFileToDirectory(groupedFiles[i][j], new File(target , groupedFiles.getParentFile().getName()));
+                    }
+                }
+            }
+        } else {
+            copyFilesToDirectory(list,target);
         }
+
+        String output =  getFilePathNames(list);
+        generatePathFile(target,output);
+        return output;
     }
 
     public static boolean filesHasSameName(Collection<File> list){
@@ -212,17 +225,69 @@ public class ExportToday {
         return false;
     }
 
-    public static String copyFilesToDirectory(Collection<File> list, String target){
+    public static File[][] groupFileBySameName(Collection<File> list){
+        File[] files = list.toArray(new File[list.size()]);
+        int[] group = new int[files.length];
+        int max = 0;
+        
+        for(int i = 0; i<files.length-1;i++){
+            if(group[i] != 0){
+                continue;
+            }
+            for(int j=i+1; j<files.length;j++){
+                if(files[i].getName() == files[j].getName()){
+                    group[i] = group[j] = i;
+                    max = i;
+                }
+            }
+        }
 
-        //generate output;
+        if(max == 0){
+            return null;
+        }
+
+        File[][] groupedFiles= new File[max][files.length];
+        for(int i=0;i<max;i++){
+            int cursor = 0;
+            for(int j=0;j<files.length;j++){
+                if(files[j] == i){
+                    groupedFiles[i][cursor++] = files[j];
+                }
+            }
+        }
+
+        return groupedFiles;
+        
+    }
+
+    private static String getFilePathNames(Collection<File> list){
         StringBuilder output = new StringBuilder();
         
         for(File f:list){
             output.append(f.getAbsolutePath().replace("C:\\Repository\\qag\\Bot\\Releases","")).append("\r\n");
         }
-        
-        //copy the exported file to the target directory
+        return output.toString();
+    }
 
+    private static void generatePathFile(String target, String output){
+        //generate the path.txt file
+
+        File targetDir = new File(target);
+        if(!targetDir.exists()){
+            targetDir.mkdirs();
+        }
+
+        File txtFile = new File(targetDir,"path.txt");
+        try{
+            FileUtils.write(txtFile,output,"utf-8");
+        } catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+
+    public static void copyFilesToDirectory(Collection<File> list, String target){
+
+        //copy the exported file to the target directory
         File targetDir = new File(target);
         if(!targetDir.exists()){
             targetDir.mkdirs();
@@ -237,16 +302,7 @@ public class ExportToday {
             e.printStackTrace();
         }
 
-        //generate the path.txt file
-        File txtFile = new File(targetDir,"path.txt");
-        try{
-            FileUtils.write(txtFile,output.toString(),"utf-8");
-        } catch(IOException ex){
-            ex.printStackTrace();
-        }
-        return output.toString();
     }
-
 
     public static void main(String... arg){
         //exportTodaysFileByBot("BuyBuyBaby",true,true,false,false);
