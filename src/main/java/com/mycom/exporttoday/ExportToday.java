@@ -52,7 +52,7 @@ public class ExportToday {
         return list;
     }
 
-    private static Date getToday(){
+    public static Date getToday(){
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -187,24 +187,49 @@ public class ExportToday {
 
         Collection<File> list = getExportableFiles(botName,includeBot,includeSection,
                                                includeNlog,includeUtil,startDate);
+
+        Collection<File> listWithSameNmaes = new Collection<File>();
+        if(filesHasSameName(list,listWithSameNmaes)){
+            
+
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+            String target = "D:\\today\\" + sdf.format(getToday()) + "\\" + botName + "\\";
         
+            return copyFilesToDirectory(list,target);
+        }
+    }
+
+    public static boolean filesHasSameName(Collection<File> list){
+
+        Set<String> fileNames = new HashSet<String>();
+        for(File file :list){
+            if(!fileNames.add(file.getName())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String copyFilesToDirectory(Collection<File> list, String target){
+
+        //generate output;
         StringBuilder output = new StringBuilder();
         
         for(File f:list){
             output.append(f.getAbsolutePath().replace("C:\\Repository\\qag\\Bot\\Releases","")).append("\r\n");
         }
-
         
         //copy the exported file to the target directory
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        File targetDir = new File("D:\\today\\" + sdf.format(getToday()) + "\\" + botName + "\\");
+
+        File targetDir = new File(target);
         if(!targetDir.exists()){
             targetDir.mkdirs();
         }
         
         try{
             for(File file : list){
-
                 FileUtils.copyFileToDirectory(file,targetDir);
             }
         }
@@ -213,15 +238,15 @@ public class ExportToday {
         }
 
         //generate the path.txt file
-        File txtFile = new File("D:\\today\\" + sdf.format(getToday()) + "\\" + botName + "\\path.txt");
+        File txtFile = new File(targetDir,"path.txt");
         try{
-            
             FileUtils.write(txtFile,output.toString(),"utf-8");
         } catch(IOException ex){
             ex.printStackTrace();
         }
         return output.toString();
     }
+
 
     public static void main(String... arg){
         //exportTodaysFileByBot("BuyBuyBaby",true,true,false,false);

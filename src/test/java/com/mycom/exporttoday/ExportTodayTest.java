@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.*;
 import org.apache.commons.lang3.*;
 import com.mycom.exporttoday.*;
+import java.text.*;
 // import com.mycom.filter.*;
 
 /**
@@ -39,10 +40,57 @@ public class ExportTodayTest
     /**
      * Rigourous Test :-)
      */
-    public void testApp()
-    {
-        Collection<File> list = ExportToday.getAllBotFiles();
-        System.out.println(StringUtils.join(list,"\n"));
+    // public void testGetAllBotFiles()
+    // {
+    //     Collection<File> list = ExportToday.getAllBotFiles();
+    //     System.out.println(StringUtils.join(list,"\n"));
+    //     assertTrue( true );
+    // }
+
+    public void testGetBotNamesChangedToday(){
+        List<String> botNames = ExportToday.getBotNamesChangedToday();
+        System.out.println("=======================");
+        System.out.println(StringUtils.join(botNames,"\n"));
+        System.out.println("=======================");
         assertTrue( true );
     }
+    private static Collection<File> cashedFiles = null;
+    
+    public void testGetExportableFilesOfToday(){
+        // Collection<File> files = ExportToday.getExportableFilesOfToday("FacebookTopApps",true,false,false,false);
+
+        // System.out.println("=========include bot==============");
+        // System.out.println(StringUtils.join(files,"\n"));
+        // System.out.println("=======================");
+
+        // files = ExportToday.getExportableFilesOfToday("FacebookTopApps",false,false,false,false);
+        
+        // System.out.println("=========exclude bot==============");
+        // System.out.println(StringUtils.join(files,"\n"));
+        // System.out.println("=======================");
+
+        // cashedFiles = files;
+
+        assertTrue( true );
+
+    }
+
+    public void testCopyFilesToDirectory(){
+        // System.out.println(cashedFiles);
+
+        // assertNotNull(cashedFiles);
+
+        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        // String target = "D:\\temp\\" + sdf.format(new Date()) + "\\FacebookTopApps\\";
+
+        // String output = ExportToday.copyFilesToDirectory(cashedFiles, target);
+
+        // System.out.println(output);
+
+        assertTrue(true);
+    }
+    
+
+
 }
