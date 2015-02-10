@@ -23,6 +23,7 @@ public class ExportTodayPanel extends JPanel {
     private JCheckBox utilCheckBox;
     private JFrame textFrame;
     private JTextArea jTextAreaInsidetextFrame;
+    private Exporter r20Exporter;
     
     public ExportTodayPanel(){
 
@@ -67,6 +68,8 @@ public class ExportTodayPanel extends JPanel {
             });
         add(updateBotList);
 
+        r20Exporter = new ExporterR20();
+
         updateBotList();
     }
 
@@ -74,8 +77,18 @@ public class ExportTodayPanel extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    String dateStr = dateField.getText().trim();
+
+                    List<String> botChangedToday = null;
+
+                    if("".equals(dateStr)){
+                        botChangedToday = r20Exporter.getBotNamesChanged(CommonUtils.getToday());
+                    } else {
+                        botChangedToday = r20Exporter.getBotNamesChanged(parseDate(dateStr));
+                    }
+
                     comboBox.removeAllItems();
-                    List<String> botChangedToday = ExportToday.getBotNamesChangedToday();
+                    
                     for (String botName : botChangedToday) {
                         comboBox.addItem(botName);
                     }
@@ -107,14 +120,14 @@ public class ExportTodayPanel extends JPanel {
             String dateStr = dateField.getText().trim();
             String list =null;
             if("".equals(dateStr)){
-                list = ExportToday.exportFiles((String) comboBox.getSelectedItem(),
+                list = r20Exporter.exportFiles((String) comboBox.getSelectedItem(),
                                                checkBox.isSelected(),
                                                xmlcheckBox.isSelected(),
                                                nlogcheckBox.isSelected(),
                                                utilCheckBox.isSelected(),
-                                               ExportToday.getToday());
+                                               CommonUtils.getToday());
             } else {
-                list = ExportToday.exportFiles((String) comboBox.getSelectedItem(),
+                list = r20Exporter.exportFiles((String) comboBox.getSelectedItem(),
                                                checkBox.isSelected(),
                                                xmlcheckBox.isSelected(),
                                                nlogcheckBox.isSelected(),
