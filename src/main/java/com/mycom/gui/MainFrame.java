@@ -24,7 +24,7 @@ public class MainFrame extends JFrame {
                 
         add(new PackBotPanel());
                 
-        add(new ExportTodayPanel());
+        add(new ExporterPanel());
 
         run();
     }
