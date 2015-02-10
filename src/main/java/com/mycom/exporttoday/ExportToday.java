@@ -6,12 +6,14 @@ import java.util.*;
 import java.io.*;
 import org.apache.commons.io.*;
 import org.apache.commons.io.filefilter.*;
-import com.mycom.filter.*;
+import com.mycom.filefilter.*;
+import org.apache.commons.lang3.*;
 
-public class ExportToday {
+public class ExportTodayR20 implements Exporter {
     public static final String R20Dir = "C:\\Repository\\qag\\Bot\\Releases\\R20\\";
     
-
+    public static final boolean DEBUG = true;
+    
     public static Properties botRealName;
     private static Collection<File> allBotFileList;
     private static SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
@@ -34,14 +36,13 @@ public class ExportToday {
                 
         return FileUtils.listFiles(new File(R20Dir, "APP\\Majestic.Bot.Job"),
                                    new SuffixFileFilter(".cs"),
-                                   new NotFileFilter(new NameFileFilter(new String[]{"bin","obj","Properties"})));
+                                   new NotFileFilter(new NameFileFilter(new String[]{"bin","obj","Properties","RegexFiles","Config"})));
         //return FileUtil.walk(new File(Export.botDir + "APP\\Majestic.Bot.Job"),".cs",".csproj");
     }
         
     private static Collection<File> getFilesChangedTodayInDir(String targetdir, IOFileFilter filter){
         return getFilesChangedAfterDateInDir(targetdir,filter,getToday());
     }
-
             
     private static Collection<File> getFilesChangedAfterDateInDir(String targetdir, IOFileFilter filter, Date date){
                 
@@ -61,7 +62,6 @@ public class ExportToday {
         Date today = cal.getTime();
         return today;
     }
-
         
     public static List<String> getBotNamesChangedToday(){
         List<String> botNameList = new LinkedList<String>();
@@ -124,15 +124,17 @@ public class ExportToday {
     private static Collection<File> getExportableFiles(String botName,boolean includeBot,boolean includeSection,
                                                boolean includeNlog,boolean includeUtil,Date startDate){
 
-        IOFileFilter filter = FileFilterUtils.or(new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
-                                                                   new SuffixFileFilter(".cs",IOCase.INSENSITIVE)),
-                                                 new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
-                                                                   new SuffixFileFilter(".regex",IOCase.INSENSITIVE)),
-                                                 new ParentWildcardFileFilter("*amazon*"));
+        // IOFileFilter filter = FileFilterUtils.or(new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
+        //                                                            new SuffixFileFilter(".cs",IOCase.INSENSITIVE)),
+        //                                          new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
+        //                                                            new SuffixFileFilter(".regex",IOCase.INSENSITIVE)),
+        //                                          new ParentWildcardFileFilter("*amazon*"))
+        // ;
 
-        Collection<File> list = getFilesChangedAfterDateInDir("",filter,startDate);
-
-        
+        Collection<File> list = getFilesChangedAfterDateInDir("",
+                                                              new AndFileFilter(new PathNameRegexFileFilter(botName) ,
+                                                                                new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
+                                                              startDate);
 
         if (includeUtil) {
             list.addAll(getFilesChangedAfterDateInDir("Framework\\Util",new SuffixFileFilter(".cs",IOCase.INSENSITIVE),startDate));
@@ -163,7 +165,6 @@ public class ExportToday {
                 }
             }
         }
-
         //remove the cs file
         if(!includeBot){
             for(File f:list){
@@ -193,25 +194,9 @@ public class ExportToday {
 
         String target = "D:\\today\\" + sdf.format(getToday()) + "\\" + botName + "\\";
         
+        copyFilesToDirectory(list,target);
 
-        if(filesHasSameName(list)){
-            File[][] groupedFiles = groupFileBySameName();
-            //save file withou same name;
-            String result = copyFilesToDirectory(Arrays.asList(groupedFiles[0],target));
-            for(int i = 1 ; i<groupedFiles.length; i++){
-                for(int j = 0; j<groupedFiles[i].length; j++){
-                    if(groupedFiles[i][j] != null){
-                        FileUtils.copyFileToDirectory(groupedFiles[i][j], new File(target , groupedFiles.getParentFile().getName()));
-                    }
-                }
-            }
-        } else {
-            copyFilesToDirectory(list,target);
-        }
-
-        String output =  getFilePathNames(list);
-        generatePathFile(target,output);
-        return output;
+        return generatePathFile(list,target);
     }
 
     public static boolean filesHasSameName(Collection<File> list){
@@ -228,32 +213,37 @@ public class ExportToday {
     public static File[][] groupFileBySameName(Collection<File> list){
         File[] files = list.toArray(new File[list.size()]);
         int[] group = new int[files.length];
-        int max = 0;
+        int max = 1;
         
+
         for(int i = 0; i<files.length-1;i++){
             if(group[i] != 0){
                 continue;
             }
             for(int j=i+1; j<files.length;j++){
-                if(files[i].getName() == files[j].getName()){
-                    group[i] = group[j] = i;
-                    max = i;
+
+                // if(DEBUG){
+                //     System.out.println(files[i].getName());
+                //     System.out.println(files[j].getName());
+                // }
+
+                if(files[i].getName().equals(files[j].getName())){
+                    group[i] = group[j] = max;
                 }
+            }
+            if(group[i]>0){
+                max++;
             }
         }
 
-        if(max == 0){
+        if(max == 1){
             return null;
         }
 
         File[][] groupedFiles= new File[max][files.length];
-        for(int i=0;i<max;i++){
-            int cursor = 0;
-            for(int j=0;j<files.length;j++){
-                if(files[j] == i){
-                    groupedFiles[i][cursor++] = files[j];
-                }
-            }
+        int[] counter= new int[max];
+        for(int i=0;i<files.length;i++){
+            groupedFiles[group[i]][counter[group[i]]++]=files[i];
         }
 
         return groupedFiles;
@@ -269,9 +259,11 @@ public class ExportToday {
         return output.toString();
     }
 
-    private static void generatePathFile(String target, String output){
+    public static String generatePathFile(Collection<File> list, String target){
         //generate the path.txt file
 
+        String output = getFilePathNames(list);
+            
         File targetDir = new File(target);
         if(!targetDir.exists()){
             targetDir.mkdirs();
@@ -283,19 +275,45 @@ public class ExportToday {
         } catch(IOException ex){
             ex.printStackTrace();
         }
+
+        return output;
     }
 
     public static void copyFilesToDirectory(Collection<File> list, String target){
+
 
         //copy the exported file to the target directory
         File targetDir = new File(target);
         if(!targetDir.exists()){
             targetDir.mkdirs();
         }
-        
         try{
-            for(File file : list){
-                FileUtils.copyFileToDirectory(file,targetDir);
+            
+            if(filesHasSameName(list)){
+                File[][] groupedFiles = groupFileBySameName(list);
+                //save file withou same name;
+
+                for(File file : groupedFiles[0]){
+                    if(file !=null)
+                        FileUtils.copyFileToDirectory(file,targetDir);
+                }
+
+                for(int i = 1 ; i<groupedFiles.length; i++){
+                    for(int j = 0; j<groupedFiles[i].length; j++){
+                        if(groupedFiles[i][j] != null){
+                            try{
+                                FileUtils.copyFileToDirectory(groupedFiles[i][j], new File(target , groupedFiles[i][j].getParentFile().getName()));
+                            }
+                            catch(Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            } else {
+                for(File file : list){
+                    FileUtils.copyFileToDirectory(file,targetDir);
+                }
             }
         }
         catch(IOException e){

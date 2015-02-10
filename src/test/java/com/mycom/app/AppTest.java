@@ -9,7 +9,7 @@ import org.apache.commons.io.filefilter.*;
 import java.io.*;
 import java.util.*;
 import org.apache.commons.lang3.*;
-import com.mycom.filter.*;
+import com.mycom.filefilter.*;
 
 /**
  * Unit test for simple App.
