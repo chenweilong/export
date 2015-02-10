@@ -15,9 +15,9 @@ public class ExportTodayR20 implements Exporter {
     public static final boolean DEBUG = true;
     
     public static Properties botRealName;
-    private static Collection<File> allBotFileList;
-    private static SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
-    private static IOFileFilter excludedDirFilter = new NotFileFilter(new NameFileFilter(new String[]{"bin","obj","Properties"}));
+    private  Collection<File> allBotFileList;
+    private  SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+    private  IOFileFilter excludedDirFilter = new NotFileFilter(new NameFileFilter(new String[]{"bin","obj","Properties"}));
 
     //load the properties file
     static {
@@ -32,19 +32,15 @@ public class ExportTodayR20 implements Exporter {
         }
     }
     
-    public static Collection<File> getAllBotFiles(){
+    public  Collection<File> getAllBotFiles(){
                 
         return FileUtils.listFiles(new File(R20Dir, "APP\\Majestic.Bot.Job"),
                                    new SuffixFileFilter(".cs"),
                                    new NotFileFilter(new NameFileFilter(new String[]{"bin","obj","Properties","RegexFiles","Config"})));
-        //return FileUtil.walk(new File(Export.botDir + "APP\\Majestic.Bot.Job"),".cs",".csproj");
-    }
-        
-    private static Collection<File> getFilesChangedTodayInDir(String targetdir, IOFileFilter filter){
-        return getFilesChangedAfterDateInDir(targetdir,filter,getToday());
+
     }
             
-    private static Collection<File> getFilesChangedAfterDateInDir(String targetdir, IOFileFilter filter, Date date){
+    private Collection<File> getFilesChangedInDir(String targetdir, IOFileFilter filter, Date date){
                 
         //check file modified today
         Collection<File> list = FileUtils.listFiles(new File(R20Dir,targetdir),
@@ -63,12 +59,13 @@ public class ExportTodayR20 implements Exporter {
         return today;
     }
         
-    public static List<String> getBotNamesChangedToday(){
+    @Override
+    public List<String> getBotNamesChanged(Date startDate){
         List<String> botNameList = new LinkedList<String>();
 
         List<File> regexList = null;
-        Collection<File> files = getFilesChangedTodayInDir("APP\\Majestic.Bot.Job",new SuffixFileFilter(new String[]{".cs",".regex"}));
-        files.addAll(getFilesChangedTodayInDir("APP\\Majestic.Bot.Job_Browser",new SuffixFileFilter(".cs")));
+        Collection<File> files = getFilesChangedInDir("APP\\Majestic.Bot.Job",new SuffixFileFilter(new String[]{".cs",".regex"}),startDate);
+        files.addAll(getFilesChangedInDir("APP\\Majestic.Bot.Job_Browser",new SuffixFileFilter(".cs")),startDate);
                 
         for(File file:files){
             if(botRealName.containsKey(file.getName())){
@@ -108,7 +105,7 @@ public class ExportTodayR20 implements Exporter {
         return botNameList;
     }
         
-    private static String getBotName(String fileName) {
+    private String getBotName(String fileName) {
         if(botRealName.containsKey(fileName)){
             return (String)botRealName.get(fileName);
         } else{
@@ -116,12 +113,7 @@ public class ExportTodayR20 implements Exporter {
         }
     }
 
-    public static Collection<File> getExportableFilesOfToday(String botName,boolean includeBot,boolean includeSection,boolean includeNlog,boolean includeUtil){
-
-        return getExportableFiles(botName, includeBot, includeSection, includeNlog, includeUtil,getToday());
-    }
-     
-    private static Collection<File> getExportableFiles(String botName,boolean includeBot,boolean includeSection,
+    private Collection<File> getExportableFiles(String botName,boolean includeBot,boolean includeSection,
                                                boolean includeNlog,boolean includeUtil,Date startDate){
 
         // IOFileFilter filter = FileFilterUtils.or(new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
@@ -183,7 +175,8 @@ public class ExportTodayR20 implements Exporter {
         }
     }
 
-    public static String exportFiles(String botName,boolean includeBot,boolean includeSection,
+    @Override
+    public String exportFiles(String botName,boolean includeBot,boolean includeSection,
                                                boolean includeNlog,boolean includeUtil,Date startDate){
 
         Collection<File> list = getExportableFiles(botName,includeBot,includeSection,
@@ -199,7 +192,7 @@ public class ExportTodayR20 implements Exporter {
         return generatePathFile(list,target);
     }
 
-    public static boolean filesHasSameName(Collection<File> list){
+    public boolean filesHasSameName(Collection<File> list){
 
         Set<String> fileNames = new HashSet<String>();
         for(File file :list){
@@ -210,7 +203,7 @@ public class ExportTodayR20 implements Exporter {
         return false;
     }
 
-    public static File[][] groupFileBySameName(Collection<File> list){
+    public File[][] groupFileBySameName(Collection<File> list){
         File[] files = list.toArray(new File[list.size()]);
         int[] group = new int[files.length];
         int max = 1;
@@ -250,7 +243,7 @@ public class ExportTodayR20 implements Exporter {
         
     }
 
-    private static String getFilePathNames(Collection<File> list){
+    private String getFilePathNames(Collection<File> list){
         StringBuilder output = new StringBuilder();
         
         for(File f:list){
@@ -259,7 +252,7 @@ public class ExportTodayR20 implements Exporter {
         return output.toString();
     }
 
-    public static String generatePathFile(Collection<File> list, String target){
+    public String generatePathFile(Collection<File> list, String target){
         //generate the path.txt file
 
         String output = getFilePathNames(list);
@@ -279,7 +272,7 @@ public class ExportTodayR20 implements Exporter {
         return output;
     }
 
-    public static void copyFilesToDirectory(Collection<File> list, String target){
+    public void copyFilesToDirectory(Collection<File> list, String target){
 
 
         //copy the exported file to the target directory
