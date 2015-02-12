@@ -1,13 +1,16 @@
 package com.mycom.util;
 
-import org.apache.commoms.io.*;
+import org.apache.commons.io.*;
 import java.util.*;
 import java.io.*;
+import java.text.*;
 
 public final class CommonUtils{
     
     private CommonUtils(){}
     
+    public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        
     public static void copyFilesToDirectory(Collection<File> list, String target){
         //copy the exported file to the target directory
         File targetDir = new File(target);
@@ -111,7 +114,7 @@ public final class CommonUtils{
         return output;
     }
 
-    private Date today;
+    private static Date today;
     
     public static Date getToday(){
         if(today!=null)

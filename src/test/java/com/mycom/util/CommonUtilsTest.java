@@ -1,4 +1,4 @@
-package com.mycom.exporttoday;
+package com.mycom.util;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -9,6 +9,7 @@ import junit.framework.TestSuite;
 import java.io.*;
 import java.util.*;
 import org.apache.commons.lang3.*;
+import com.mycom.util.*;
 import com.mycom.exporttoday.*;
 import java.text.*;
 
@@ -34,7 +35,7 @@ public class CommonUtilsTest
      */
     public static Test suite()
     {
-        return new TestSuite( ExportTodayTest.class );
+        return new TestSuite( CommonUtilsTest.class );
     }
 
 
@@ -57,7 +58,7 @@ public class CommonUtilsTest
 
         System.out.println(StringUtils.join(list,"\n"));
 
-        File[][] files = ExportToday.groupFileBySameName(list);
+        File[][] files = CommonUtils.groupFileBySameName(list);
         System.out.print("files[0]:");
         System.out.println(StringUtils.join(files[0],"\n"));
         System.out.print("files[1]:");

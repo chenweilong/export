@@ -6,6 +6,7 @@ import java.util.*;
 import java.io.*;
 import org.apache.commons.io.*;
 import org.apache.commons.io.filefilter.*;
+import com.mycom.util.*;
 import com.mycom.filefilter.*;
 import org.apache.commons.lang3.*;
 
@@ -14,15 +15,15 @@ public class ExporterR20 implements Exporter {
     
     public static final boolean DEBUG = true;
     
-    public static Properties botRealName;
+    public static Properties botAliasName;
     private  Collection<File> allBotFileList;
     private  IOFileFilter excludedDirFilter = new NotFileFilter(new NameFileFilter(new String[]{"bin","obj","Properties"}));
 
     //load the properties file
     static {
         try{
-            botRealName = new Properties();
-            botRealName.load(ExportToday.class.getResourceAsStream("/aliasname.properties"));
+            botAliasName = new Properties();
+            botAliasName.load(ExporterR20.class.getResourceAsStream("/aliasname.properties"));
         }
         catch(IOException e){
             System.out.println("-----------failue-------------");
@@ -40,19 +41,23 @@ public class ExporterR20 implements Exporter {
     }
             
     @Override
-    public List<String> getBotNamesChanged(Date startDate){
+    public Collection<String> getBotNamesChanged(Date startDate){
         if (startDate == null)
             startDate = CommonUtils.getToday();
 
-        List<String> botNameList = new LinkedList<String>();
+        Set<String> botNameList = new HashSet<String>();
 
         List<File> regexList = null;
-        Collection<File> files = getFilesChangedInDir("APP\\Majestic.Bot.Job",new SuffixFileFilter(new String[]{".cs",".regex"}),startDate);
-        files.addAll(getFilesChangedInDir("APP\\Majestic.Bot.Job_Browser",new SuffixFileFilter(".cs")),startDate);
-                
+        Collection<File> files = getFilesChangedInDir("APP\\Majestic.Bot.Job",
+                                                      new SuffixFileFilter(new String[]{".cs",".regex"},IOCase.INSENSITIVE),
+                                                      excludedDirFilter,
+                                                      startDate);
+        files.addAll(getFilesChangedInDir("APP\\Majestic.Bot.Job_Browser",new SuffixFileFilter(".cs"),excludedDirFilter,startDate));
+
+        
         for(File file:files){
             if(file.getName().toLowerCase().contains(".cs") ){
-                botNameList.add(getBotRealName(file));
+                botNameList.add(getBotAliasName(file));
             } else if(file.getName().toLowerCase().contains(".regex")){
                 if(regexList == null){
                     regexList = new ArrayList<File>();
@@ -69,66 +74,126 @@ public class ExporterR20 implements Exporter {
         if(allBotFileList == null)
             allBotFileList = getAllBotFiles();
 
-
-        Set<String> botnameset = new HashSet<String>();
-        
         //add the regex file's corresponding bot file name to the hashset.
         for(File regexFile : regexList){
             for(File botfile:allBotFileList){
-                String botRealName = getBotRealName(botfile);
-                if(regexFile.getName().toLowerCase().contains(botRealName.toLowerCase())){
-                    botnameset.add(botRealName);
+                String name = getBotAliasName(botfile);
+                if(regexFile.getName().toLowerCase().contains(name.toLowerCase())){
+                    botNameList.add(name);
                     break;
                 }
             }
         }
-        
-        botNameList.addAll(botnameset);
 
         return botNameList;
     }
 
-    private String getBotRealName(File file){
+    private String getBotAliasName(File file){
         String name = file.getName();
-        if(botRealName.containsKey(name)){
-            return botRealName.getProperty(name);
+        if(botAliasName.containsKey(name)){
+            return botAliasName.getProperty(name);
         } else{
-            return name.substring(0,name.length() -2 );
+            return name.substring(0,name.length() -3 );
         }
     }
 
-    private Collection<File> getFilesChangedInDir(String targetdir, IOFileFilter filter, Date date){
+    public File getBotFileByName(String name){
+        if(allBotFileList == null)
+            allBotFileList = getAllBotFiles();
+        String realname = getBotRealName(name);
+
+        for(File file: allBotFileList){
+            if(file.getName().equals(realname)){
+                return file;
+            }
+        }
+
+        return null;
+    }
+
+    public String getBotRealName(String name){
+        Set<Map.Entry<Object,Object>> entries = botAliasName.entrySet();
+        for(Map.Entry<Object,Object> entry : entries){
+            if(entry.getValue().equals(name)){
+                return (String)entry.getKey();
+            }
+        }
+        return name + ".cs";
+    }
+
+    private Collection<File> getFilesChangedInDir(String targetdir, IOFileFilter filter,IOFileFilter dirfilter, Date date){
                 
         //check file modified today
-        Collection<File> list = FileUtils.listFiles(new File(R20Dir,targetdir),
+
+        Collection<File> list = FileUtils.listFiles("".equals(targetdir)?new File(R20Dir):new File(R20Dir,targetdir),
                                                     FileFilterUtils.and(filter,new AgeFileFilter(date,false)),
-                                                    excludedDirFilter);
+                                                    dirfilter);
         return list;
     }
     
-    private Collection<File> getExportableFiles(String botName,
+    @Override
+    public Collection<File> getExportableFiles(String botName,
                                                 boolean includeBot,
                                                 boolean includeSection,
                                                 boolean includeNlog,
                                                 boolean includeUtil,
                                                 Date startDate){
 
-        Collection<File> list = getFilesChangedInDir("",
-                                                     new AndFileFilter(new PathNameRegexFileFilter(botName) ,
-                                                                       new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
-                                                     startDate);
+        File file = getBotFileByName(botName);
+
+        //        System.out.println(file);
+        
+        Collection<File> list = null;
+
+        if (file == null){
+            list = getFilesChangedInDir("",
+                new AndFileFilter(new PathNameRegexFileFilter(botName) ,
+                    new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
+                excludedDirFilter,
+                startDate);
+        } else {
+            String dirname = file.getParentFile().getName();
+
+            System.out.println(dirname);
+
+            //main bot file
+            list = getFilesChangedInDir("APP\\Majestic.Bot.Job\\" + dirname,
+                                        new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
+                                                          new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
+                                        FalseFileFilter.INSTANCE,
+                                        startDate);
+            //regex file
+            list.addAll(getFilesChangedInDir("APP\\Majestic.Bot.Job\\RegexFiles",
+                                             new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE) ,
+                                                               new SuffixFileFilter(".regex",IOCase.INSENSITIVE)),
+                                             FalseFileFilter.INSTANCE,
+                                             startDate));
+
+            //dao file
+            list.addAll(getFilesChangedInDir("APP\\Majestic.Dal\\" + dirname,
+                                             new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
+                                                               new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
+                                             FalseFileFilter.INSTANCE,
+                                             startDate));
+            //entity file
+            list.addAll(getFilesChangedInDir("APP\\Majestic.Entity\\" + dirname,
+                                             new AndFileFilter(new PathNameRegexFileFilter(botName) ,
+                                                               new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
+                                             excludedDirFilter,
+                                             startDate));
+        }
 
         if (includeUtil) {
-            list.addAll(getFilesChangedInDir("Framework\\Util",new SuffixFileFilter(".cs",IOCase.INSENSITIVE),startDate));
+            list.addAll(getFilesChangedInDir("Framework\\Util",new SuffixFileFilter(".cs",IOCase.INSENSITIVE),excludedDirFilter,startDate));
         }
         
         //add the section file
         if(includeSection){
             for(File f:list){
-                if(f.getName().contains(botName + ".cs")|| botRealName.containsKey(f.getName()) ){
-                    File file = new File(R20Dir + "APP\\Majestic.Bot.Job\\Config\\" + f.getParentFile().getName() + ".xml");
-                    if(file.exists()){
-                        list.add(file);
+                if(f.getName().contains(botName + ".cs")|| botAliasName.containsKey(f.getName()) ){
+                    File xmlfile = new File(R20Dir + "APP\\Majestic.Bot.Job\\Config\\" + f.getParentFile().getName() + ".xml");
+                    if(xmlfile.exists()){
+                        list.add(xmlfile);
                     }
                     break;
                 }
@@ -138,10 +203,10 @@ public class ExporterR20 implements Exporter {
         //add the nlog file
         if(includeNlog){
             for(File f:list){
-                if(f.getName().contains(botName + ".cs")|| botRealName.containsKey(f.getName()) ){
-                    File file = new File(R20Dir + "APP\\Majestic.Bot.Job\\Config\\" + f.getParentFile().getName() + ".nlog");
-                    if(file.exists()){
-                        list.add(file);
+                if(f.getName().contains(botName + ".cs")|| botAliasName.containsKey(f.getName()) ){
+                    File nlogfile = new File(R20Dir + "APP\\Majestic.Bot.Job\\Config\\" + f.getParentFile().getName() + ".nlog");
+                    if(nlogfile.exists()){
+                        list.add(nlogfile);
                     }
                     break;
                 }
@@ -150,7 +215,7 @@ public class ExporterR20 implements Exporter {
         //remove the cs file
         if(!includeBot){
             for(File f:list){
-                if(f.getName().contains(botName + ".cs")|| botRealName.containsKey(f.getName()) ){
+                if(f.getName().contains(botName + ".cs")|| botAliasName.containsKey(f.getName()) ){
                     list.remove(f);
                     break;
                 }
@@ -166,19 +231,11 @@ public class ExporterR20 implements Exporter {
     }
 
     @Override
-    public String exportFiles(String botName,
-                              boolean includeBot,
-                              boolean includeSection,
-                              boolean includeNlog,
-                              boolean includeUtil,
-                              Date startDate){
-
-        Collection<File> list = getExportableFiles(botName,includeBot,includeSection,
-                                               includeNlog,includeUtil,startDate);
+    public String exportFiles(Collection<File> list, String botName){
 
         // Collection<File> listWithSameNmaes = new Collection<File>();
 
-        String target = "D:\\today\\" + sdf.format(CommonUtils.getToday()) + "\\" + botName + "\\";
+        String target = "D:\\today\\" + CommonUtils.sdf.format(CommonUtils.getToday()) + "\\" + botName + "\\";
         
         CommonUtils.copyFilesToDirectory(list,target);
 

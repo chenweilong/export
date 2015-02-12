@@ -11,7 +11,8 @@ import java.util.*;
 import org.apache.commons.lang3.*;
 import com.mycom.exporttoday.*;
 import java.text.*;
-
+import org.apache.commons.io.*;
+import com.mycom.util.*;
 
 /**
  * Unit test for simple App.
@@ -34,7 +35,7 @@ public class ExporterR20Test
      */
     public static Test suite()
     {
-        return new TestSuite( ExportTodayTest.class );
+        return new TestSuite( ExporterR20Test.class );
     }
 
     /**
@@ -47,14 +48,100 @@ public class ExporterR20Test
     //     assertTrue( true );
     // }
 
-    public void testGetBotNamesChangedToday(){
-        List<String> botNames = ExportToday.getBotNamesChangedToday();
-        System.out.println("=======================");
+    public void testGetBotNamesChangedTodayCS(){
+
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\TestBot.cs");
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
+
+        System.out.println("============TestBot CS===========");
         System.out.println(StringUtils.join(botNames,"\n"));
-        System.out.println("=======================");
-        assertTrue( true );
+
+        assertTrue(botNames.contains("TestBot"));
+
     }
-    private static Collection<File> cashedFiles = null;
+
+    public void testGetBotNamesChangedTodayRegex(){
+        
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Testttt_Kohls_Product2SizeOptions.Regex");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
+
+        System.out.println("==========Kohls Regex=============");
+        System.out.println(StringUtils.join(botNames,"\n"));
+        
+        assertTrue(botNames.contains("Kohls"));
+
+    }
+
+    public void testGetBotNamesChangedTodayAliasNameCS(){
+        
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\AmazonHardlines.cs");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
+
+        System.out.println("==========Amazon CS============");
+        System.out.println(StringUtils.join(botNames,"\n"));
+
+        assertTrue(botNames.contains("Amazon"));
+    }
+
+    public void testGetBotNamesChangedTodayAliasNameRegex(){
+        
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\TEST_ECommerce_OpenTableRC_GetLinksFromMenuItems.regex");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
+
+        System.out.println("==========OpenTable CS============");
+        System.out.println(StringUtils.join(botNames,"\n"));
+
+        assertTrue(botNames.contains("OpenTable"));
+    }
+
+    public void testGetBotFileByName(){
+        System.out.println("==========testGetBotFileByName============");
+        File f = ((ExporterR20)exporter).getBotFileByName("TestBot");
+        System.out.println(f.getPath());
+        assertNotNull(f);
+    }
+
+    public void testGetExportableFiles(){
+        System.out.println("==========testGetExportableFiles============");
+        Collection<File> files = exporter.getExportableFiles("TestBot",true,false,false,false,CommonUtils.getToday());
+        System.out.println(StringUtils.join(files,"\n"));
+
+        files = exporter.getExportableFiles("Amazon",true,false,false,false,CommonUtils.getToday());
+        System.out.println(StringUtils.join(files,"\n"));
+        
+        assertTrue(true);
+    }
+
+
+    
+    Exporter exporter = new ExporterR20();
     
     public void setUp(){}
     
