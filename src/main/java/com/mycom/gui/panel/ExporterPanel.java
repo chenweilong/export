@@ -31,6 +31,7 @@ public class ExporterPanel extends JPanel {
     private JFrame textFrame;
     private JTextArea jTextAreaInsidetextFrame;
     private Exporter r20Exporter;
+    private Exporter r16Exporter;
     private JButton btnPickdate;
     private JLabel label;
     private JLabel lblBot;
@@ -46,6 +47,8 @@ public class ExporterPanel extends JPanel {
         lblBot_1 = new JLabel("bot\u7248\u672C");
                                 
         releaseComboBox = new JComboBox<String>();
+        releaseComboBox.addItem("R16");
+        releaseComboBox.addItem("R20");
                                 
         label = new JLabel("\u8D77\u59CB\u65E5\u671F");
                         
@@ -183,24 +186,30 @@ public class ExporterPanel extends JPanel {
         setLayout(groupLayout);
 
         r20Exporter = new ExporterR20();
+        r16Exporter = new ExporterR16();
 
         updateBotList();
                 
+    }
+
+    private Exporter getSelectedExporter(){
+        String edition = (String)releaseComboBox.getSelectedItem();
+        
+        if(edition.equals("R16")){
+            return r16Exporter;
+        } else if(edition.equals("R20")){
+            return r20Exporter;
+        }
     }
 
     private void updateBotList(){
         SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    String dateStr = dateField.getText().trim();
+                    Date startDate = getSelectedDate();
 
-                    Collection<String> botChangedToday = null;
-
-                    if("".equals(dateStr)){
-                        botChangedToday = r20Exporter.getBotNamesChanged(CommonUtils.getToday());
-                    } else {
-                        botChangedToday = r20Exporter.getBotNamesChanged(parseDate(dateStr));
-                    }
+                    Exporter exprter = getSelectedExporter();
+                    Collection<String> botChangedToday = exporter.getBotNamesChanged(startDate);
 
                     comboBox.removeAllItems();
                     
@@ -228,28 +237,34 @@ public class ExporterPanel extends JPanel {
         return null;
     }
 
+    private Date getSelectedDate(){
+        String dateStr = dateField.getText().trim();
+        Date startDate = null;
+        if("".equals(dateStr)){
+            startDate = CommonUtils.getToday();
+        } else {
+            startDate = parseDate(dateStr);
+        }
+        return startDate;    
+    }
+
     private class ScanFilesListener implements ActionListener{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String dateStr = dateField.getText().trim();
-            Date startDate = null;
-            if("".equals(dateStr)){
-                startDate = CommonUtils.getToday();
-            } else {
-                startDate = parseDate(dateStr);
-            }
+
+            Date startDate = getSelectedDate();
+            
             String botName = (String)comboBox.getSelectedItem();
             
-            Collection<File> list = r20Exporter.getExportableFiles(botName,
+            Exporter exprter = getSelectedExporter();
+            Collection<File> list = exporter.getExportableFiles(botName,
                                                                    checkBox.isSelected(),
                                                                    xmlcheckBox.isSelected(),
                                                                    nlogcheckBox.isSelected(),
                                                                    utilCheckBox.isSelected(),
                                                                    startDate);
             tablepanel.setData(list);
-            
-
         }
             
     }
@@ -262,7 +277,8 @@ public class ExporterPanel extends JPanel {
 
             Collection<File> list = tablepanel.getData();
             
-            String result = r20Exporter.exportFiles(list,botName);
+            Exporter exprter = getSelectedExporter();
+            String result = exporter.exportFiles(list,botName);
                         
             if  (result== null) {
                 JOptionPane.showMessageDialog(null, "nothing exported!");

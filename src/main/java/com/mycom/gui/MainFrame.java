@@ -19,13 +19,11 @@ public class MainFrame extends JFrame {
     private static final long serialVersionUID = -1245831187038866496L;
 
     public MainFrame() {
-
-        setLayout(new GridLayout(2, 1));
-                
-        add(new PackBotPanel());
-                
-        add(new ExporterPanel());
-
+        //setLayout(new GridLayout(2, 1));
+        JTabbedPane tabPane = new JTabbedPane();
+        tabPane.addTab("Exporter",new ExporterPanel());
+        tabPane.addTab("Packer",new PackBotPanel());
+        pack();
         run();
     }
     

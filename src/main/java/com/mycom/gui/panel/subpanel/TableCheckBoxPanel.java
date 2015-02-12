@@ -41,6 +41,11 @@ public class TableCheckBoxPanel extends JPanel {
     
     public void setData(Collection<File> list){
 
+        if(list == null){
+            dataModel.setDataVector(null, HEADCOLUMNS);
+            return;
+        }
+        
         File[] alist = list.toArray(new File[list.size()]);
 
         Object[][] datas = new Object[list.size()][2];
@@ -130,19 +135,18 @@ public class TableCheckBoxPanel extends JPanel {
     }
 
     public static void main(String[] args) {
-    	
     	final TableCheckBoxPanel p = new TableCheckBoxPanel();
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-            	
+                
                 createAndShowUI(p);
                 p.setData(Arrays.asList(new File[]{new File("d:/adas")}));
                 
                 Collection<File> a = p.getData();
                 for(Object i : a){
-                	System.out.println(i);
+                    System.out.println(i);
                 
                 }
             }
