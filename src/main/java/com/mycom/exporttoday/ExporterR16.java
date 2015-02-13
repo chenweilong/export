@@ -38,11 +38,11 @@ public class ExporterR16 implements Exporter {
 
     @Override
     public Collection<File> getExportableFiles(String botName,
-                                               boolean includeBot,
-                                               boolean includeSection,
-                                               boolean includeNlog,
-                                               boolean includeUtil,
-                                               Date startDate){
+        boolean includeSection,
+        boolean includeNlog,
+        boolean includeUtil,
+        Date startDate){
+        
         File targetDir = new File(R16Dir,botName);
         
         Collection<File> list = FileUtils
@@ -56,6 +56,10 @@ public class ExporterR16 implements Exporter {
 
     @Override
     public String exportFiles(Collection<File> list, String botName){
+
+        if(list.size() == 0){
+            return null;
+        }
 
         String target = "D:\\today\\" + CommonUtils.sdf.format(CommonUtils.getToday()) + "\\" + botName + "\\";
         

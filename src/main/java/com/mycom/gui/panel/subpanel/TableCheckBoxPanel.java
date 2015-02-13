@@ -29,14 +29,16 @@ public class TableCheckBoxPanel extends JPanel {
     
     public TableCheckBoxPanel() {
         super(new BorderLayout());
-       
         
         table = new JTable(dataModel);
         
         this.add(new JScrollPane(table));
 //        this.add(new ControlPanel(), BorderLayout.SOUTH);
         table.setPreferredScrollableViewportSize(new Dimension(250, 175));
-
+        table.getColumnModel().getColumn(1).setMinWidth(50);
+        table.getColumnModel().getColumn(1).setMaxWidth(50);
+        table.getColumnModel().getColumn(1).setPreferredWidth(50);
+        
     }
     
     public void setData(Collection<File> list){
@@ -56,6 +58,10 @@ public class TableCheckBoxPanel extends JPanel {
         }
 
     	dataModel.setDataVector(datas, HEADCOLUMNS);
+
+        table.getColumnModel().getColumn(1).setMinWidth(50);
+        table.getColumnModel().getColumn(1).setMaxWidth(50);
+        table.getColumnModel().getColumn(1).setPreferredWidth(50);
     	
 
     }

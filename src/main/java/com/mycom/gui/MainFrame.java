@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.*;
+import java.awt.*;
 import java.util.*;
 import java.io.*;
 import java.text.*;
@@ -23,20 +24,24 @@ public class MainFrame extends JFrame {
         JTabbedPane tabPane = new JTabbedPane();
         tabPane.addTab("Exporter",new ExporterPanel());
         tabPane.addTab("Packer",new PackBotPanel());
+        add(tabPane);
         pack();
         run();
     }
     
     private void run() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 400);
+        setSize(600, 600);
         setVisible(true);
     }
 
     public static void main(String[] args) {
 
-        MainFrame j = new MainFrame();
-
+        EventQueue.invokeLater(new Runnable(){
+                @Override
+                public void run(){
+                    MainFrame j = new MainFrame();
+                }
+            });
     }
-
 }

@@ -2,6 +2,7 @@ package com.mycom.gui.panel;
 
 import javax.swing.*;
 
+import java.awt.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -16,15 +17,15 @@ import com.mycom.gui.panel.subpanel.TableCheckBoxPanel;
 import com.mycom.util.*;
 
 import org.apache.commons.io.*;
+import org.apache.commons.lang3.*;
 
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class ExporterPanel extends JPanel {
 
-    private JComboBox<String> comboBox;
+    private JComboBox<String> botlistComboBox;
     private JTextField dateField;
-    private JCheckBox checkBox ;
     private JCheckBox xmlcheckBox;
     private JCheckBox nlogcheckBox;
     private JCheckBox utilCheckBox;
@@ -38,6 +39,11 @@ public class ExporterPanel extends JPanel {
     private JComboBox<String> releaseComboBox;
     private JLabel lblBot_1;
     private TableCheckBoxPanel tablepanel;
+    private JButton scanFilesBtn;
+    private JButton updateBotListBtn;
+    private JButton openPathBtn;
+    private JScrollPane scrollPane;
+    private JButton exportFilesBtn;
     
     /**
      * 
@@ -47,9 +53,7 @@ public class ExporterPanel extends JPanel {
         lblBot_1 = new JLabel("bot\u7248\u672C");
                                 
         releaseComboBox = new JComboBox<String>();
-        releaseComboBox.addItem("R16");
-        releaseComboBox.addItem("R20");
-                                
+
         label = new JLabel("\u8D77\u59CB\u65E5\u671F");
                         
         dateField = new JTextField();
@@ -59,37 +63,25 @@ public class ExporterPanel extends JPanel {
         lblBot = new JLabel("bot\u5217\u8868");
                         
         // add a drop down list
-        comboBox = new JComboBox<String>();
+        botlistComboBox = new JComboBox<String>();
                 
-        JButton updateBotList = new JButton("Refresh");
-        updateBotList.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    updateBotList();
-                }
-            });
-                
-        checkBox = new JCheckBox("include cs file", true);
-                
+        updateBotListBtn = new JButton("Refresh");
+
         xmlcheckBox = new JCheckBox("include xml file",false);
                 
         nlogcheckBox = new JCheckBox("include nlog file", false);
 
         utilCheckBox = new JCheckBox("include utils", false);
         
-        JButton scanFilesBtn = new JButton("scan files");
-        scanFilesBtn.addActionListener(new ScanFilesListener());
-                
-        JButton openPath = new JButton("open path file");
-        openPath.addActionListener(new OpenPathListener());
+        scanFilesBtn = new JButton("scan files");
+
+        openPathBtn = new JButton("open path file");
         
         tablepanel  = new TableCheckBoxPanel();
         
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(tablepanel);
-        
-        JButton btnExportFiles = new JButton("export files");
-        btnExportFiles.addActionListener(new ExportFilesListener());
+        scrollPane = new JScrollPane();
+
+        exportFilesBtn = new JButton("export files");
 
         GroupLayout groupLayout = new GroupLayout(this);
         groupLayout.setHorizontalGroup(groupLayout
@@ -117,17 +109,11 @@ public class ExporterPanel extends JPanel {
                         .addGap(91)
                         .addComponent(lblBot)
                         .addGap(5)
-                        .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
                         .addGap(5)
-                        .addComponent(updateBotList, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(updateBotListBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
                     .addGroup(groupLayout
                         .createSequentialGroup()
-                        .addGap(134)
-                        .addComponent(scanFilesBtn, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(groupLayout
-                        .createSequentialGroup()
-                        .addComponent(checkBox, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
-                        .addGap(5)
                         .addComponent(xmlcheckBox, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(ComponentPlacement.UNRELATED)
                         .addComponent(nlogcheckBox)
@@ -135,13 +121,17 @@ public class ExporterPanel extends JPanel {
                         .addComponent(utilCheckBox))
                     .addGroup(groupLayout
                         .createSequentialGroup()
+                        .addGap(90)
+                        .addComponent(scanFilesBtn))
+                    .addGroup(groupLayout
+                        .createSequentialGroup()
                         .addComponent(scrollPane, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(groupLayout
                         .createSequentialGroup()
                         .addGap(148)
-                        .addComponent(btnExportFiles)
+                        .addComponent(exportFilesBtn)
                         .addGap(18)
-                        .addComponent(openPath, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)))));
+                        .addComponent(openPathBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)))));
 
         groupLayout.setVerticalGroup(groupLayout
             .createParallelGroup(Alignment.LEADING)
@@ -162,34 +152,61 @@ public class ExporterPanel extends JPanel {
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
                     .addComponent(lblBot)
-                    .addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(updateBotList))
+                    .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(updateBotListBtn))
                 .addGap(6)
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
                     .addComponent(nlogcheckBox)
                     .addComponent(utilCheckBox)
-                    .addComponent(xmlcheckBox)
-                    .addComponent(checkBox))
+                    .addComponent(xmlcheckBox))
                 .addGap(6)
-                .addGroup(groupLayout
-                    .createParallelGroup(Alignment.CENTER)
-                    .addComponent(scanFilesBtn))
+                .addComponent(scanFilesBtn)
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addGap(18)
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.BASELINE)
-                    .addComponent(btnExportFiles)
-                    .addComponent(openPath))
+                    .addComponent(exportFilesBtn)
+                    .addComponent(openPathBtn))
                 .addGap(34)));
         setLayout(groupLayout);
 
         r20Exporter = new ExporterR20();
         r16Exporter = new ExporterR16();
 
-        updateBotList();
+        filldata();
+        
+        //updateBotListBtn();
                 
+    }
+
+    private void filldata(){
+        EventQueue.invokeLater(new Runnable(){
+                @Override
+                public void run(){
+                    releaseComboBox.addItemListener(new ReleasesEditionChangedListener());
+
+                    releaseComboBox.addItem("R16");
+                    releaseComboBox.addItem("R20");
+                    releaseComboBox.setSelectedItem("R20");
+
+                    updateBotListBtn.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                updateBotList();
+                            }
+                        });
+
+                    scrollPane.setViewportView(tablepanel);
+
+                    scanFilesBtn.addActionListener(new ScanFilesListener());
+                    openPathBtn.addActionListener(new OpenPathListener());
+                    exportFilesBtn.addActionListener(new ExportFilesListener());
+
+                    botlistComboBox.addItemListener(new BotChangedListener());
+                }
+            });
     }
 
     private Exporter getSelectedExporter(){
@@ -197,9 +214,10 @@ public class ExporterPanel extends JPanel {
         
         if(edition.equals("R16")){
             return r16Exporter;
-        } else if(edition.equals("R20")){
+        } else{
             return r20Exporter;
         }
+
     }
 
     private void updateBotList(){
@@ -208,13 +226,13 @@ public class ExporterPanel extends JPanel {
                 public void run() {
                     Date startDate = getSelectedDate();
 
-                    Exporter exprter = getSelectedExporter();
+                    Exporter exporter = getSelectedExporter();
                     Collection<String> botChangedToday = exporter.getBotNamesChanged(startDate);
 
-                    comboBox.removeAllItems();
+                    botlistComboBox.removeAllItems();
                     
                     for (String botName : botChangedToday) {
-                        comboBox.addItem(botName);
+                        botlistComboBox.addItem(botName);
                     }
                                 
                 }
@@ -252,35 +270,42 @@ public class ExporterPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
-            Date startDate = getSelectedDate();
-            
-            String botName = (String)comboBox.getSelectedItem();
-            
-            Exporter exprter = getSelectedExporter();
-            Collection<File> list = exporter.getExportableFiles(botName,
-                                                                   checkBox.isSelected(),
-                                                                   xmlcheckBox.isSelected(),
-                                                                   nlogcheckBox.isSelected(),
-                                                                   utilCheckBox.isSelected(),
-                                                                   startDate);
-            tablepanel.setData(list);
+            scanFiles();
         }
             
+    }
+
+    private void scanFiles(){
+        EventQueue.invokeLater(new Runnable(){
+                @Override
+                public void run(){
+                    Date startDate = getSelectedDate();
+            
+                    String botName = (String)botlistComboBox.getSelectedItem();
+            
+                    Exporter exporter = getSelectedExporter();
+                    Collection<File> list = exporter.getExportableFiles(botName, 
+                        xmlcheckBox.isSelected(),
+                        nlogcheckBox.isSelected(),
+                        utilCheckBox.isSelected(),
+                        startDate);
+                    tablepanel.setData(list);
+                }
+            });
     }
 
     private class ExportFilesListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            String botName = (String)comboBox.getSelectedItem();
+            String botName = (String)botlistComboBox.getSelectedItem();
 
             Collection<File> list = tablepanel.getData();
             
-            Exporter exprter = getSelectedExporter();
+            Exporter exporter = getSelectedExporter();
             String result = exporter.exportFiles(list,botName);
                         
-            if  (result== null) {
+            if  (StringUtils.isEmpty(result)) {
                 JOptionPane.showMessageDialog(null, "nothing exported!");
             } else {
                 JOptionPane.showMessageDialog(null, result);
@@ -288,12 +313,11 @@ public class ExporterPanel extends JPanel {
         }
     }
 
-
     private class OpenPathListener implements  ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            File f = new File("D:\\today\\" + sdf.format(new Date()) + "\\" + (String) comboBox.getSelectedItem() + "\\path.txt");
+            File f = new File("D:\\today\\" + sdf.format(new Date()) + "\\" + (String) botlistComboBox.getSelectedItem() + "\\path.txt");
             String text = "";
             if(f.exists()){
                 try{
@@ -315,6 +339,22 @@ public class ExporterPanel extends JPanel {
             jTextAreaInsidetextFrame.setText(text);
             textFrame.setVisible(true);
         }
+    }
+
+    private class ReleasesEditionChangedListener implements ItemListener{
+
+        @Override
+        public void itemStateChanged(ItemEvent e){
+            updateBotList();
+        }
+    }
+
+    private class BotChangedListener implements ItemListener{
+        @Override
+        public void itemStateChanged(ItemEvent e){
+            scanFiles();
+        }
+        
     }
 
     private void initTextFrame(){

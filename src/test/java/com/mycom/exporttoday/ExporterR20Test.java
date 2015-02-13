@@ -87,7 +87,7 @@ public class ExporterR20Test
 
     public void testGetBotNamesChangedTodayAliasNameCS(){
         
-        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\AmazonHardlines.cs");
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\AmazonHardlinesTest.cs");
 
         try{
             FileUtils.touch(file);
@@ -100,7 +100,7 @@ public class ExporterR20Test
         System.out.println("==========Amazon CS============");
         System.out.println(StringUtils.join(botNames,"\n"));
 
-        assertTrue(botNames.contains("Amazon"));
+        assertTrue(botNames.contains("AmazonHardlinesT"));
     }
 
     public void testGetBotNamesChangedTodayAliasNameRegex(){
@@ -130,10 +130,12 @@ public class ExporterR20Test
 
     public void testGetExportableFiles(){
         System.out.println("==========testGetExportableFiles============");
-        Collection<File> files = exporter.getExportableFiles("TestBot",true,false,false,false,CommonUtils.getToday());
+        Collection<File> files = exporter.getExportableFiles("TestBot",false,false,false,CommonUtils.getToday());
+        assertTrue(files.size() == 1);
         System.out.println(StringUtils.join(files,"\n"));
 
-        files = exporter.getExportableFiles("Amazon",true,false,false,false,CommonUtils.getToday());
+        files = exporter.getExportableFiles("AmazonHardlinesT",false,false,false,CommonUtils.getToday());
+        assertTrue(files.size() == 1);
         System.out.println(StringUtils.join(files,"\n"));
         
         assertTrue(true);

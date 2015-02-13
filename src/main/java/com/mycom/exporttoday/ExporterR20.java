@@ -132,16 +132,15 @@ public class ExporterR20 implements Exporter {
     }
     
     @Override
-    public Collection<File> getExportableFiles(String botName,
-                                                boolean includeBot,
-                                                boolean includeSection,
-                                                boolean includeNlog,
-                                                boolean includeUtil,
-                                                Date startDate){
-
+    public Collection<File> getExportableFiles(String botName, 
+        boolean includeSection,
+        boolean includeNlog,
+        boolean includeUtil,
+        Date startDate){
+        
         File file = getBotFileByName(botName);
 
-        //        System.out.println(file);
+        // System.out.println(file);
         
         Collection<File> list = null;
 
@@ -154,7 +153,7 @@ public class ExporterR20 implements Exporter {
         } else {
             String dirname = file.getParentFile().getName();
 
-            System.out.println(dirname);
+            //System.out.println(dirname);
 
             //main bot file
             list = getFilesChangedInDir("APP\\Majestic.Bot.Job\\" + dirname,
@@ -162,12 +161,16 @@ public class ExporterR20 implements Exporter {
                                                           new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
                                         FalseFileFilter.INSTANCE,
                                         startDate);
+
+            // System.out.println("debug:" + StringUtils.join(list,"\n"));
+
             //regex file
             list.addAll(getFilesChangedInDir("APP\\Majestic.Bot.Job\\RegexFiles",
                                              new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE) ,
                                                                new SuffixFileFilter(".regex",IOCase.INSENSITIVE)),
                                              FalseFileFilter.INSTANCE,
                                              startDate));
+
 
             //dao file
             list.addAll(getFilesChangedInDir("APP\\Majestic.Dal\\" + dirname,
@@ -212,15 +215,15 @@ public class ExporterR20 implements Exporter {
                 }
             }
         }
-        //remove the cs file
-        if(!includeBot){
-            for(File f:list){
-                if(f.getName().contains(botName + ".cs")|| botAliasName.containsKey(f.getName()) ){
-                    list.remove(f);
-                    break;
-                }
-            }
-        }
+        // //remove the cs file
+        // if(!includeBot){
+        //     for(File f:list){
+        //         if(f.getName().contains(botName + ".cs")|| botAliasName.containsKey(f.getName()) ){
+        //             list.remove(f);
+        //             break;
+        //         }
+        //     }
+        // }
         
         if(list.isEmpty()){
             return null;
@@ -234,7 +237,10 @@ public class ExporterR20 implements Exporter {
     public String exportFiles(Collection<File> list, String botName){
 
         // Collection<File> listWithSameNmaes = new Collection<File>();
-
+        if(list.size() == 0){
+            return null;
+        }
+        
         String target = "D:\\today\\" + CommonUtils.sdf.format(CommonUtils.getToday()) + "\\" + botName + "\\";
         
         CommonUtils.copyFilesToDirectory(list,target);
