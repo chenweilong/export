@@ -192,27 +192,17 @@ public class ExporterR20 implements Exporter {
         
         //add the section file
         if(includeSection){
-            for(File f:list){
-                if(f.getName().contains(botName + ".cs")|| botAliasName.containsKey(f.getName()) ){
-                    File xmlfile = new File(R20Dir + "APP\\Majestic.Bot.Job\\Config\\" + f.getParentFile().getName() + ".xml");
-                    if(xmlfile.exists()){
-                        list.add(xmlfile);
-                    }
-                    break;
-                }
+            File xmlfile = new File(R20Dir + "APP\\Majestic.Bot.Job\\Config\\" + file.getParentFile().getName() + ".xml");
+            if(xmlfile.exists()){
+                list.add(xmlfile);
             }
         }
 
         //add the nlog file
         if(includeNlog){
-            for(File f:list){
-                if(f.getName().contains(botName + ".cs")|| botAliasName.containsKey(f.getName()) ){
-                    File nlogfile = new File(R20Dir + "APP\\Majestic.Bot.Job\\Config\\" + f.getParentFile().getName() + ".nlog");
-                    if(nlogfile.exists()){
-                        list.add(nlogfile);
-                    }
-                    break;
-                }
+            File nlogfile = new File(R20Dir + "APP\\Majestic.Bot.Job\\Config\\" + file.getParentFile().getName() + ".nlog");
+            if(nlogfile.exists()){
+                list.add(nlogfile);
             }
         }
         // //remove the cs file

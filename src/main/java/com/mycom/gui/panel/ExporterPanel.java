@@ -95,7 +95,9 @@ public class ExporterPanel extends JPanel {
                         .addGap(91)
                         .addComponent(lblBot_1)
                         .addGap(5)
-                        .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
+                        .addGap(5)
+                        .addComponent(updateBotListBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
                     .addGroup(groupLayout
                         .createSequentialGroup()
                         .addGap(85)
@@ -111,7 +113,7 @@ public class ExporterPanel extends JPanel {
                         .addGap(5)
                         .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
                         .addGap(5)
-                        .addComponent(updateBotListBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(scanFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
                     .addGroup(groupLayout
                         .createSequentialGroup()
                         .addComponent(xmlcheckBox, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
@@ -119,10 +121,6 @@ public class ExporterPanel extends JPanel {
                         .addComponent(nlogcheckBox)
                         .addGap(14)
                         .addComponent(utilCheckBox))
-                    .addGroup(groupLayout
-                        .createSequentialGroup()
-                        .addGap(90)
-                        .addComponent(scanFilesBtn))
                     .addGroup(groupLayout
                         .createSequentialGroup()
                         .addComponent(scrollPane, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -141,7 +139,8 @@ public class ExporterPanel extends JPanel {
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
                     .addComponent(lblBot_1)
-                    .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(updateBotListBtn))
                 .addGap(6)
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
@@ -153,15 +152,13 @@ public class ExporterPanel extends JPanel {
                     .createParallelGroup(Alignment.CENTER)
                     .addComponent(lblBot)
                     .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(updateBotListBtn))
+                    .addComponent(scanFilesBtn))
                 .addGap(6)
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
                     .addComponent(nlogcheckBox)
                     .addComponent(utilCheckBox)
                     .addComponent(xmlcheckBox))
-                .addGap(6)
-                .addComponent(scanFilesBtn)
                 .addPreferredGap(ComponentPlacement.UNRELATED)
                 .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addGap(18)
