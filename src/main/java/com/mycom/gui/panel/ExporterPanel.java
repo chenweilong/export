@@ -3,10 +3,6 @@ package com.mycom.gui.panel;
 import javax.swing.*;
 
 import java.awt.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.*;
 import java.util.*;
 import java.io.*;
@@ -21,6 +17,11 @@ import org.apache.commons.lang3.*;
 
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import org.jdatepicker.*;
+import org.jdatepicker.util.JDatePickerUtil;
+
+
 
 public class ExporterPanel extends JPanel {
 
@@ -44,6 +45,7 @@ public class ExporterPanel extends JPanel {
     private JButton openPathBtn;
     private JScrollPane scrollPane;
     private JButton exportFilesBtn;
+    private JDatePicker datePicker;
     
     /**
      * 
@@ -56,16 +58,19 @@ public class ExporterPanel extends JPanel {
 
         label = new JLabel("\u8D77\u59CB\u65E5\u671F");
                         
-        dateField = new JTextField();
+        // dateField = new JTextField();
                         
-        btnPickdate = new JButton("PickDate");
+        // btnPickdate = new JButton("PickDate");
+
+        JDatePickerUtil.setChineseWeekDay();
+        datePicker = new JDateComponentFactory().createJDatePicker();
                                 
         lblBot = new JLabel("bot\u5217\u8868");
                         
         // add a drop down list
         botlistComboBox = new JComboBox<String>();
                 
-        updateBotListBtn = new JButton("Refresh");
+        updateBotListBtn = new JButton("刷新列表");
 
         xmlcheckBox = new JCheckBox("include xml file",false);
                 
@@ -73,15 +78,15 @@ public class ExporterPanel extends JPanel {
 
         utilCheckBox = new JCheckBox("include utils", false);
         
-        scanFilesBtn = new JButton("scan files");
+        scanFilesBtn = new JButton("重新扫描");
 
-        openPathBtn = new JButton("open path file");
+        openPathBtn = new JButton("打开path");
         
         tablepanel  = new TableCheckBoxPanel();
         
         scrollPane = new JScrollPane();
 
-        exportFilesBtn = new JButton("export files");
+        exportFilesBtn = new JButton("导出已选");
 
         GroupLayout groupLayout = new GroupLayout(this);
         groupLayout.setHorizontalGroup(groupLayout
@@ -95,25 +100,24 @@ public class ExporterPanel extends JPanel {
                         .addGap(91)
                         .addComponent(lblBot_1)
                         .addGap(5)
-                        .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-                        .addGap(5)
-                        .addComponent(updateBotListBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
                     .addGroup(groupLayout
                         .createSequentialGroup()
                         .addGap(85)
                         .addComponent(label)
                         .addGap(5)
-                        .addComponent(dateField, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-                        .addGap(5)
-                        .addComponent(btnPickdate, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+                        .addComponent((JComponent)datePicker,GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
+                        // .addComponent(dateField, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+                        // .addGap(5)
+                        // .addComponent(btnPickdate, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
                     .addGroup(groupLayout
                         .createSequentialGroup()
                         .addGap(91)
                         .addComponent(lblBot)
                         .addGap(5)
-                        .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
                         .addGap(5)
-                        .addComponent(scanFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(updateBotListBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
                     .addGroup(groupLayout
                         .createSequentialGroup()
                         .addComponent(xmlcheckBox, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
@@ -126,10 +130,12 @@ public class ExporterPanel extends JPanel {
                         .addComponent(scrollPane, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(groupLayout
                         .createSequentialGroup()
-                        .addGap(148)
-                        .addComponent(exportFilesBtn)
+                        .addGap(90)
+                        .addComponent(scanFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
                         .addGap(18)
-                        .addComponent(openPathBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)))));
+                        .addComponent(exportFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+                        .addGap(18)
+                        .addComponent(openPathBtn,GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)))));
 
         groupLayout.setVerticalGroup(groupLayout
             .createParallelGroup(Alignment.LEADING)
@@ -139,20 +145,20 @@ public class ExporterPanel extends JPanel {
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
                     .addComponent(lblBot_1)
-                    .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(updateBotListBtn))
+                    .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addGap(6)
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
                     .addComponent(label)
-                    .addComponent(dateField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPickdate))
+                    .addComponent((JComponent)datePicker))
+                    // .addComponent(dateField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    // .addComponent(btnPickdate))
                 .addGap(6)
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
                     .addComponent(lblBot)
                     .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(scanFilesBtn))
+                    .addComponent(updateBotListBtn))
                 .addGap(6)
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.CENTER)
@@ -164,6 +170,7 @@ public class ExporterPanel extends JPanel {
                 .addGap(18)
                 .addGroup(groupLayout
                     .createParallelGroup(Alignment.BASELINE)
+                    .addComponent(scanFilesBtn)
                     .addComponent(exportFilesBtn)
                     .addComponent(openPathBtn))
                 .addGap(34)));
@@ -253,13 +260,13 @@ public class ExporterPanel extends JPanel {
     }
 
     private Date getSelectedDate(){
-        String dateStr = dateField.getText().trim();
-        Date startDate = null;
-        if("".equals(dateStr)){
-            startDate = CommonUtils.getToday();
-        } else {
-            startDate = parseDate(dateStr);
-        }
+        // String dateStr = dateField.getText().trim();
+        Date startDate = ((Calendar)datePicker.getModel().getValue()).getTime();
+        // if("".equals(dateStr)){
+        //     startDate = CommonUtils.getToday();
+        // } else {
+        //     startDate = parseDate(dateStr);
+        // }
         return startDate;    
     }
 
