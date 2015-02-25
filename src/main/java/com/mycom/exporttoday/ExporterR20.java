@@ -140,7 +140,7 @@ public class ExporterR20 implements Exporter {
         
         File file = getBotFileByName(botName);
 
-        // System.out.println(file);
+        //System.out.println(file);
         
         Collection<File> list = null;
 
@@ -155,9 +155,11 @@ public class ExporterR20 implements Exporter {
 
             //System.out.println(dirname);
 
+            String fileName = file.getName();
+            
             //main bot file
             list = getFilesChangedInDir("APP\\Majestic.Bot.Job\\" + dirname,
-                                        new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
+                                        new AndFileFilter(new WildcardFileFilter("*" + fileName + "*",IOCase.INSENSITIVE),
                                                           new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
                                         FalseFileFilter.INSTANCE,
                                         startDate);
@@ -174,13 +176,13 @@ public class ExporterR20 implements Exporter {
 
             //dao file
             list.addAll(getFilesChangedInDir("APP\\Majestic.Dal\\" + dirname,
-                                             new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
+                                             new AndFileFilter(new WildcardFileFilter("*" + fileName + "*",IOCase.INSENSITIVE),
                                                                new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
                                              FalseFileFilter.INSTANCE,
                                              startDate));
             //entity file
             list.addAll(getFilesChangedInDir("APP\\Majestic.Entity\\" + dirname,
-                                             new AndFileFilter(new PathNameRegexFileFilter(botName) ,
+                                             new AndFileFilter(new PathNameRegexFileFilter(fileName) ,
                                                                new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
                                              excludedDirFilter,
                                              startDate));
