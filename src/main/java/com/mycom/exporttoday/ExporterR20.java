@@ -158,11 +158,16 @@ public class ExporterR20 implements Exporter {
             String fileName = file.getName();
             
             //main bot file
-            list = getFilesChangedInDir("APP\\Majestic.Bot.Job\\" + dirname,
-                                        new AndFileFilter(new WildcardFileFilter("*" + fileName + "*",IOCase.INSENSITIVE),
-                                                          new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
-                                        FalseFileFilter.INSTANCE,
-                                        startDate);
+            // list = getFilesChangedInDir("APP\\Majestic.Bot.Job\\" + dirname,
+            //                             new AndFileFilter(new WildcardFileFilter("*" + fileName + "*",IOCase.INSENSITIVE),
+            //                                               new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
+            //                             FalseFileFilter.INSTANCE,
+            //                             startDate);
+
+            list = new LinkedList<File>();
+            if(file.lastModified() > startDate.getTime()){
+                list.add(file);
+            }
 
             // System.out.println("debug:" + StringUtils.join(list,"\n"));
 

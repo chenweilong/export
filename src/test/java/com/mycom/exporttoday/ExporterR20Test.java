@@ -50,13 +50,7 @@ public class ExporterR20Test
 
     public void testGetBotNamesChangedTodayCS(){
 
-        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\TestBot.cs");
-        try{
-            FileUtils.touch(file);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        
+
         Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
 
         System.out.println("============TestBot CS===========");
@@ -67,14 +61,6 @@ public class ExporterR20Test
     }
 
     public void testGetBotNamesChangedTodayRegex(){
-        
-        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Testttt_Kohls_Product2SizeOptions.Regex");
-
-        try{
-            FileUtils.touch(file);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
         
         Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
 
@@ -87,13 +73,6 @@ public class ExporterR20Test
 
     public void testGetBotNamesChangedTodayAliasNameCS(){
         
-        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\AmazonHardlinesTest.cs");
-
-        try{
-            FileUtils.touch(file);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
         
         Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
 
@@ -104,14 +83,7 @@ public class ExporterR20Test
     }
 
     public void testGetBotNamesChangedTodayAliasNameRegex(){
-        
-        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\TEST_ECommerce_OpenTableRC_GetLinksFromMenuItems.regex");
 
-        try{
-            FileUtils.touch(file);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
         
         Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
 
@@ -145,7 +117,42 @@ public class ExporterR20Test
     
     Exporter exporter = new ExporterR20();
     
-    public void setUp(){}
+    public void setUp(){
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\TestBot.cs");
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+                
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\TEST_ECommerce_OpenTableRC_GetLinksFromMenuItems.regex");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\AmazonHardlinesTest.cs");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Testttt_Kohls_Product2SizeOptions.Regex");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+
+        
+    }
     
 
 }
