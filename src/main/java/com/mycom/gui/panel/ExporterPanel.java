@@ -261,7 +261,13 @@ public class ExporterPanel extends JPanel {
 
     private Date getSelectedDate(){
         // String dateStr = dateField.getText().trim();
-        Date startDate = ((Calendar)datePicker.getModel().getValue()).getTime();
+        Calendar cal = (Calendar)datePicker.getModel().getValue();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        Date startDate = cal.getTime();
         // if("".equals(dateStr)){
         //     startDate = CommonUtils.getToday();
         // } else {
