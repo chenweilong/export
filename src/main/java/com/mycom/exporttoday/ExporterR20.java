@@ -156,6 +156,7 @@ public class ExporterR20 implements Exporter {
             //System.out.println(dirname);
 
             String fileName = file.getName();
+            fileName = fileName.substring(0,fileName.length()-3);
             
             //main bot file
             // list = getFilesChangedInDir("APP\\Majestic.Bot.Job\\" + dirname,
