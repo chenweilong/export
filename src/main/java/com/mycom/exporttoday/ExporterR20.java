@@ -192,6 +192,13 @@ public class ExporterR20 implements Exporter {
                                                                new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
                                              excludedDirFilter,
                                              startDate));
+
+            //database file
+            list.addAll(getFilesChangedInDir("Database\\",
+                    new PathNameRegexFileFilter(fileName) ,
+                    FalseFileFilter.INSTANCE,
+                    startDate));
+            
         }
 
         if (includeUtil) {
