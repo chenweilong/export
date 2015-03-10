@@ -56,15 +56,10 @@ public class CommonUtilsTest
 
     public void testGroupFileBySameName(){
 
-        System.out.println(StringUtils.join(list,"\n"));
-
         File[][] files = CommonUtils.groupFileBySameName(list);
-        System.out.print("files[0]:");
-        System.out.println(StringUtils.join(files[0],"\n"));
-        System.out.print("files[1]:");
-        System.out.println(StringUtils.join(files[1],"\n"));
 
         assertNotNull(files);
+        assertEquals(files.length, 2);
             
     }
 
@@ -76,7 +71,13 @@ public class CommonUtilsTest
 
         CommonUtils.copyFilesToDirectory(list, target);
 
-        assertTrue(true);
+        File file = new File("D:\\Temp\\2015-03-10\\Expedia\\Expedia\\ExpediaUS.cs");
+        
+        assertTrue(file.exists());
+        
+        file = new File("D:\\Temp\\2015-03-10\\Expedia\\TravelAgencies\\ExpediaUS.cs");
+        
+        assertTrue(file.exists());
 
     }
 
@@ -85,8 +86,6 @@ public class CommonUtilsTest
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         String target = "D:\\temp\\" + sdf.format(new Date()) + "\\Expedia\\";
-
-        System.out.println(CommonUtils.generatePathFile(list,target));
 
         File file = new File(target,"path.txt");
 

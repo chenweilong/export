@@ -50,74 +50,6 @@ public class ExporterR20Test
 
     public void testGetBotNamesChangedTodayCS(){
 
-
-        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
-
-        System.out.println("============TestBot CS===========");
-        System.out.println(StringUtils.join(botNames,"\n"));
-
-        assertTrue(botNames.contains("TestBot"));
-
-    }
-
-    public void testGetBotNamesChangedTodayRegex(){
-        
-        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
-
-        System.out.println("==========Kohls Regex=============");
-        System.out.println(StringUtils.join(botNames,"\n"));
-        
-        assertTrue(botNames.contains("Kohls"));
-
-    }
-
-    public void testGetBotNamesChangedTodayAliasNameCS(){
-        
-        
-        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
-
-        System.out.println("==========Amazon CS============");
-        System.out.println(StringUtils.join(botNames,"\n"));
-
-        assertTrue(botNames.contains("AmazonHardlinesT"));
-    }
-
-    public void testGetBotNamesChangedTodayAliasNameRegex(){
-
-        
-        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
-
-        System.out.println("==========OpenTable CS============");
-        System.out.println(StringUtils.join(botNames,"\n"));
-
-        assertTrue(botNames.contains("OpenTable"));
-    }
-
-    public void testGetBotFileByName(){
-        System.out.println("==========testGetBotFileByName============");
-        File f = ((ExporterR20)exporter).getBotFileByName("TestBot");
-        System.out.println(f.getPath());
-        assertNotNull(f);
-    }
-
-    public void testGetExportableFiles(){
-        System.out.println("==========testGetExportableFiles============");
-        Collection<File> files = exporter.getExportableFiles("TestBot",false,false,false,CommonUtils.getToday());
-        assertTrue(files.size() == 1);
-        System.out.println(StringUtils.join(files,"\n"));
-
-        files = exporter.getExportableFiles("AmazonHardlinesT",false,false,false,CommonUtils.getToday());
-        assertTrue(files.size() == 1);
-        System.out.println(StringUtils.join(files,"\n"));
-        
-        assertTrue(true);
-    }
-
-
-    
-    Exporter exporter = new ExporterR20();
-    
-    public void setUp(){
         File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\TestBot.cs");
         try{
             FileUtils.touch(file);
@@ -125,24 +57,115 @@ public class ExporterR20Test
             e.printStackTrace();
         }
 
+        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
+
+        assertTrue(botNames.contains("TestBot"));
+
+    }
+    
+    SimpleDateFormat sdf; 
+    Date yesterday;
+    
+    {
+		sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			yesterday = sdf.parse("2015-03-10");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }
+
+    public void testGetBotNamesChangedTodayFullRegex(){
+        
+    	
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\TestBot.cs");
+        try{
+            file.setLastModified(yesterday.getTime());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Retaillisting_TestBot_ABCDEFG.regex");
+
+        try{
+        	 FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Retaillisting_TB_ABCDEFG.regex");
+
+        try{
+        	file.setLastModified(yesterday.getTime());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        
+        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
+        
+        assertTrue(botNames.contains("TestBot"));
+
+    }
+    
+    public void testGetBotNamesChangedTodayAliasRegex(){
+        
+    	
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\TestBot.cs");
+        try{
+            file.setLastModified(yesterday.getTime());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Retaillisting_TestBot_ABCDEFG.regex");
+
+        try{
+        	file.setLastModified(yesterday.getTime());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Retaillisting_TB_ABCDEFG.regex");
+
+        try{
+       	    FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
+        
+        assertTrue(botNames.contains("TestBot"));
+
+    }
+
+    
+
+    public void testGetExportableFiles(){
+    	
+    	touchAll();
+    	
+        Collection<File> files = exporter.getExportableFiles("TestBot",false,false,false,CommonUtils.getToday());
+        
+        assertEquals(files.size(),botFiles.size());
+        
+    }
+
+    Exporter exporter = new ExporterR20();
+    List<File> botFiles = new LinkedList<File>();
+    
+    public void touchAll(){
+        File file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\TestBot.cs");
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        botFiles.add(file);
                 
-        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\TEST_ECommerce_OpenTableRC_GetLinksFromMenuItems.regex");
-
-        try{
-            FileUtils.touch(file);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RetailListing\\AmazonHardlinesTest.cs");
-
-        try{
-            FileUtils.touch(file);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Testttt_Kohls_Product2SizeOptions.Regex");
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Retaillisting_TestBot_ABCDEFG.regex");
 
         try{
             FileUtils.touch(file);
@@ -150,7 +173,48 @@ public class ExporterR20Test
             e.printStackTrace();
         }
         
+        botFiles.add(file);
+        
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Retaillisting_TB_ABCDEFG.regex");
 
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        botFiles.add(file);
+        
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Dal\\RetailListing\\TestBotDao.cs");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        botFiles.add(file);
+
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Entity\\RetailListing\\TestBot\\ABCD.cs");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        botFiles.add(file);
+        
+
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\Database\\RetailListingNew\\TestBot\\update.sql");
+
+        try{
+            FileUtils.touch(file);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+        botFiles.add(file);
         
     }
     

@@ -56,9 +56,11 @@ public class ExporterR20 implements Exporter {
 
         
         for(File file:files){
-            if(file.getName().toLowerCase().contains(".cs") ){
-                botNameList.add(getBotAliasName(file));
-            } else if(file.getName().toLowerCase().contains(".regex")){
+        	String fileName = file.getName();
+            if(fileName.toLowerCase().contains(".cs") ){
+                //botNameList.add(getBotAliasName(file));
+            	botNameList.add(fileName.substring(0, fileName.length()-3));
+            } else if(fileName.toLowerCase().contains(".regex")){
                 if(regexList == null){
                     regexList = new ArrayList<File>();
                 }
@@ -79,7 +81,9 @@ public class ExporterR20 implements Exporter {
             for(File botfile:allBotFileList){
                 String name = getBotAliasName(botfile);
                 if(regexFile.getName().toLowerCase().contains(name.toLowerCase())){
-                    botNameList.add(name);
+                    //botNameList.add(name);
+                	String fileName = botfile.getName();
+                    botNameList.add(fileName.substring(0, fileName.length()-3));
                     break;
                 }
             }
@@ -97,13 +101,26 @@ public class ExporterR20 implements Exporter {
         }
     }
 
-    public File getBotFileByName(String name){
+    public File getBotFileByAliasName(String name){
         if(allBotFileList == null)
             allBotFileList = getAllBotFiles();
         String realname = getBotRealName(name);
 
         for(File file: allBotFileList){
             if(file.getName().equals(realname)){
+                return file;
+            }
+        }
+
+        return null;
+    }
+    
+    public File getBotFileByName(String name){
+        if(allBotFileList == null)
+            allBotFileList = getAllBotFiles();
+
+        for(File file: allBotFileList){
+            if(file.getName().equals(name + ".cs")){
                 return file;
             }
         }
@@ -143,10 +160,13 @@ public class ExporterR20 implements Exporter {
         //System.out.println(file);
         
         Collection<File> list = null;
+        
+        String aliasBotName = getBotAliasName(file);
 
         if (file == null){
+
             list = getFilesChangedInDir("",
-                new AndFileFilter(new PathNameRegexFileFilter(botName) ,
+                new AndFileFilter(new PathNameRegexFileFilter(aliasBotName) ,
                     new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
                 excludedDirFilter,
                 startDate);
@@ -155,48 +175,40 @@ public class ExporterR20 implements Exporter {
 
             //System.out.println(dirname);
 
-            String fileName = file.getName();
-            fileName = fileName.substring(0,fileName.length()-3);
             
-            //main bot file
-            // list = getFilesChangedInDir("APP\\Majestic.Bot.Job\\" + dirname,
-            //                             new AndFileFilter(new WildcardFileFilter("*" + fileName + "*",IOCase.INSENSITIVE),
-            //                                               new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
-            //                             FalseFileFilter.INSTANCE,
-            //                             startDate);
-
             list = new LinkedList<File>();
             if(file.lastModified() > startDate.getTime()){
                 list.add(file);
             }
 
-            // System.out.println("debug:" + StringUtils.join(list,"\n"));
-
             //regex file
             list.addAll(getFilesChangedInDir("APP\\Majestic.Bot.Job\\RegexFiles",
-                                             new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE) ,
-                                                               new SuffixFileFilter(".regex",IOCase.INSENSITIVE)),
+                                             new AndFileFilter(
+                                            		 new OrFileFilter(
+                                            				 new WildcardFileFilter("*" + aliasBotName + "*",IOCase.INSENSITIVE) 
+                                            				 ,new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE))
+                                            		 ,new SuffixFileFilter(".regex",IOCase.INSENSITIVE)),
                                              FalseFileFilter.INSTANCE,
                                              startDate));
 
 
             //dao file
             list.addAll(getFilesChangedInDir("APP\\Majestic.Dal\\" + dirname,
-                                             new AndFileFilter(new WildcardFileFilter("*" + fileName + "*",IOCase.INSENSITIVE),
+                                             new AndFileFilter(new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE),
                                                                new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
                                              FalseFileFilter.INSTANCE,
                                              startDate));
             //entity file
             list.addAll(getFilesChangedInDir("APP\\Majestic.Entity\\" + dirname,
-                                             new AndFileFilter(new PathNameRegexFileFilter(fileName) ,
+                                             new AndFileFilter(new PathNameRegexFileFilter(aliasBotName) ,
                                                                new NotFileFilter(new SuffixFileFilter(".csproj",IOCase.INSENSITIVE))),
                                              excludedDirFilter,
                                              startDate));
 
             //database file
             list.addAll(getFilesChangedInDir("Database\\",
-                    new PathNameRegexFileFilter(fileName) ,
-                    FalseFileFilter.INSTANCE,
+                    new OrFileFilter(new PathNameRegexFileFilter(aliasBotName) ,new PathNameRegexFileFilter(botName)),
+                    TrueFileFilter.INSTANCE,
                     startDate));
             
         }
@@ -220,15 +232,6 @@ public class ExporterR20 implements Exporter {
                 list.add(nlogfile);
             }
         }
-        // //remove the cs file
-        // if(!includeBot){
-        //     for(File f:list){
-        //         if(f.getName().contains(botName + ".cs")|| botAliasName.containsKey(f.getName()) ){
-        //             list.remove(f);
-        //             break;
-        //         }
-        //     }
-        // }
         
         if(list.isEmpty()){
             return null;
