@@ -9,6 +9,5 @@ public interface Exporter{
     
     String exportFiles(Collection<File> list,String botname);
 
-    Collection<File> getExportableFiles(String botname,boolean includeSection,
-                                        boolean includeNlog,boolean includeUtil,Date startDate);
+    Collection<File> getExportableFiles(String botname,Date startDate, boolean... flags);
 }

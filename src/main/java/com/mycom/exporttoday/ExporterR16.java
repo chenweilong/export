@@ -38,10 +38,8 @@ public class ExporterR16 implements Exporter {
 
     @Override
     public Collection<File> getExportableFiles(String botName,
-        boolean includeSection,
-        boolean includeNlog,
-        boolean includeUtil,
-        Date startDate){
+        Date startDate,
+        boolean... flags){
         
         File targetDir = new File(R16Dir,botName);
         

@@ -43,7 +43,7 @@ public class TableCheckBoxPanel extends JPanel {
     
     public void setData(Collection<File> list){
 
-        if(list == null){
+        if(list == null || list.size() == 0){
             dataModel.setDataVector(null, HEADCOLUMNS);
             return;
         }

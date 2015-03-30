@@ -146,7 +146,9 @@ public class ExporterR20Test
     	
     	touchAll();
     	
-        Collection<File> files = exporter.getExportableFiles("TestBot",false,false,false,CommonUtils.getToday());
+        Collection<File> files = exporter.getExportableFiles("TestBot",
+        		CommonUtils.getToday(),
+        		new boolean[]{false,false,false});
         
         assertEquals(files.size(),botFiles.size());
         

@@ -1,7 +1,10 @@
 package com.mycom.util;
 
 import org.apache.commons.io.*;
+
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.*;
 import java.text.*;
 
@@ -139,4 +142,57 @@ public final class CommonUtils{
         return false;
     }
 
+    public static void fixSectorFiles(Collection<File> list,String target,String botName) {
+        if(!list.isEmpty()){
+            for(File file:list){
+                if(file.getName().endsWith("xml")){
+                	File xmlFile = new File(target,file.getName());
+                    Pattern xmlPattern = Pattern.compile("<" + botName + "[^>]*>",Pattern.CASE_INSENSITIVE);
+                    String content="";
+                    try {
+                        content = FileUtils.readFileToString(xmlFile);
+                                                
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    Matcher matcher = xmlPattern.matcher(content);
+                    if(matcher.find()){
+                        String groupString = matcher.group();
+                        try {
+                            FileUtils.write(xmlFile, groupString);
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                                        
+                }
+                else if(file.getName().endsWith("nlog")){
+                	File nlogFile = new File(target,file.getName());
+                    Pattern xmlPattern = Pattern.compile("<target [^>]* " + botName + "((?!</target).)*</target>|<logger [^>]*" + botName + "[^>]*>",Pattern.CASE_INSENSITIVE|Pattern.DOTALL | Pattern.COMMENTS );
+                    String content="";
+                    try {
+                        content = FileUtils.readFileToString(nlogFile);
+
+                        String groupString="";
+                        
+                        Matcher matcher = xmlPattern.matcher(content);
+                        while(matcher.find()){
+                        	groupString += matcher.group();
+                        }
+                                
+                        FileUtils.write(nlogFile, groupString);
+                        
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    
+    
 }

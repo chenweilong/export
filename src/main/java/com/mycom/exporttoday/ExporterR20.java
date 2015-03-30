@@ -4,14 +4,20 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.io.*;
+
 import org.apache.commons.io.*;
 import org.apache.commons.io.filefilter.*;
+
 import com.mycom.util.*;
 import com.mycom.filefilter.*;
+
 import org.apache.commons.lang3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExporterR20 implements Exporter {
     public static final String R20Dir = "C:\\Repository\\qag\\Bot\\Releases\\R20\\";
+    Logger logger = LoggerFactory.getLogger(ExporterR20.class);
     
     public static final boolean DEBUG = true;
     
@@ -142,20 +148,49 @@ public class ExporterR20 implements Exporter {
                 
         //check file modified today
 
-        Collection<File> list = FileUtils.listFiles("".equals(targetdir)?new File(R20Dir):new File(R20Dir,targetdir),
+    	File dir = null;
+    	
+    	if(targetdir.startsWith("c:")){
+    		dir = new File(targetdir);
+    	}else if("".equals(targetdir)){
+    		dir = new File(R20Dir);
+    	}else{
+    		dir = new File(R20Dir,targetdir);
+    	}
+    	
+        Collection<File> list = FileUtils.listFiles(dir,
                                                     FileFilterUtils.and(filter,new AgeFileFilter(date,false)),
                                                     dirfilter);
         return list;
     }
     
     @Override
-    public Collection<File> getExportableFiles(String botName, 
-        boolean includeSection,
-        boolean includeNlog,
-        boolean includeUtil,
-        Date startDate){
+    public Collection<File> getExportableFiles(String botName,Date startDate, 
+    		boolean... flags){
+    	
+    	logger.debug("start");
+    	
+    	boolean includeSection = false;
+		boolean includeNlog = false;
+		boolean includeUtil = false;
+		boolean qascript = false;
+
+		try{
+			if (flags.length > 0) {
+
+				includeSection = flags[0];
+				includeNlog = flags[1];
+				includeUtil = flags[2];
+				qascript = flags[3];
+
+			}
+		}
+		catch(Exception e){
+			
+			
+		}
         
-        File file = getBotFileByName(botName);
+    	File file = getBotFileByName(botName);
 
         //System.out.println(file);
         
@@ -233,6 +268,20 @@ public class ExporterR20 implements Exporter {
             }
         }
         
+        //qa script file
+        if(qascript){
+        	
+        	logger.debug("c:\\Repository\\qag\\Bot\\QA\\Boryi\\QaScripts\\" + file.getParentFile().getName());
+        	
+        	Collection<File> qafiles = getFilesChangedInDir("c:\\Repository\\qag\\Bot\\QA\\Boryi\\QaScripts\\" + file.getParentFile().getName(), 
+        			new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE), 
+        			TrueFileFilter.INSTANCE,
+        			startDate);
+        	logger.debug(qafiles.size() + "");
+        	list.addAll(qafiles);
+        	
+        }
+        
         if(list.isEmpty()){
             return null;
         }
@@ -252,6 +301,8 @@ public class ExporterR20 implements Exporter {
         String target = "D:\\today\\" + CommonUtils.sdf.format(CommonUtils.getToday()) + "\\" + botName + "\\";
         
         CommonUtils.copyFilesToDirectory(list,target);
+        
+        CommonUtils.fixSectorFiles(list,target,botName);
 
         return CommonUtils.generatePathFile(list,target);
     }

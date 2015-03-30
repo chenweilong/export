@@ -71,22 +71,24 @@ public class CommonUtilsTest
 
         CommonUtils.copyFilesToDirectory(list, target);
 
-        File file = new File("D:\\Temp\\2015-03-10\\Expedia\\Expedia\\ExpediaUS.cs");
+        File file = new File(target + "Expedia\\ExpediaUS.cs");
         
         assertTrue(file.exists());
         
-        file = new File("D:\\Temp\\2015-03-10\\Expedia\\TravelAgencies\\ExpediaUS.cs");
+        file = new File(target + "TravelAgencies\\ExpediaUS.cs");
         
         assertTrue(file.exists());
 
     }
 
     public void testGeneratePathFile(){
-
+    	
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         String target = "D:\\temp\\" + sdf.format(new Date()) + "\\Expedia\\";
 
+    	CommonUtils.generatePathFile(list, target);
+    	
         File file = new File(target,"path.txt");
 
         assertTrue(file.exists());

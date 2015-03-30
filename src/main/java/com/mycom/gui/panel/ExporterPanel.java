@@ -30,6 +30,7 @@ public class ExporterPanel extends JPanel {
     private JCheckBox xmlcheckBox;
     private JCheckBox nlogcheckBox;
     private JCheckBox utilCheckBox;
+    private JCheckBox qascriptCheckBox;
     private JFrame textFrame;
     private JTextArea jTextAreaInsidetextFrame;
     private Exporter r20Exporter;
@@ -78,6 +79,8 @@ public class ExporterPanel extends JPanel {
 
         utilCheckBox = new JCheckBox("include utils", false);
         
+        qascriptCheckBox = new JCheckBox("qa script",false);
+        
         scanFilesBtn = new JButton("重新扫描");
 
         openPathBtn = new JButton("打开path");
@@ -88,104 +91,110 @@ public class ExporterPanel extends JPanel {
 
         exportFilesBtn = new JButton("导出已选");
 
-        GroupLayout groupLayout = new GroupLayout(this);
-        groupLayout.setHorizontalGroup(groupLayout
-            .createParallelGroup(Alignment.LEADING)
-            .addGroup(groupLayout
-                .createSequentialGroup()
-                .addGroup(groupLayout
-                    .createParallelGroup(Alignment.LEADING)
-                    .addGroup(groupLayout
-                        .createSequentialGroup()
-                        .addGap(91)
-                        .addComponent(lblBot_1)
-                        .addGap(5)
-                        .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(groupLayout
-                        .createSequentialGroup()
-                        .addGap(85)
-                        .addComponent(label)
-                        .addGap(5)
-                        .addComponent((JComponent)datePicker,GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
-                        // .addComponent(dateField, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-                        // .addGap(5)
-                        // .addComponent(btnPickdate, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(groupLayout
-                        .createSequentialGroup()
-                        .addGap(91)
-                        .addComponent(lblBot)
-                        .addGap(5)
-                        .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-                        .addGap(5)
-                        .addComponent(updateBotListBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
-                    .addGroup(groupLayout
-                        .createSequentialGroup()
-                        .addComponent(xmlcheckBox, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.UNRELATED)
-                        .addComponent(nlogcheckBox)
-                        .addGap(14)
-                        .addComponent(utilCheckBox))
-                    .addGroup(groupLayout
-                        .createSequentialGroup()
-                        .addComponent(scrollPane, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(groupLayout
-                        .createSequentialGroup()
-                        .addGap(90)
-                        .addComponent(scanFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-                        .addGap(18)
-                        .addComponent(exportFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-                        .addGap(18)
-                        .addComponent(openPathBtn,GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)))));
-
-        groupLayout.setVerticalGroup(groupLayout
-            .createParallelGroup(Alignment.LEADING)
-            .addGroup(groupLayout
-                .createSequentialGroup()
-                .addGap(6)
-                .addGroup(groupLayout
-                    .createParallelGroup(Alignment.CENTER)
-                    .addComponent(lblBot_1)
-                    .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGap(6)
-                .addGroup(groupLayout
-                    .createParallelGroup(Alignment.CENTER)
-                    .addComponent(label)
-                    .addComponent((JComponent)datePicker))
-                    // .addComponent(dateField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    // .addComponent(btnPickdate))
-                .addGap(6)
-                .addGroup(groupLayout
-                    .createParallelGroup(Alignment.CENTER)
-                    .addComponent(lblBot)
-                    .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(updateBotListBtn))
-                .addGap(6)
-                .addGroup(groupLayout
-                    .createParallelGroup(Alignment.CENTER)
-                    .addComponent(nlogcheckBox)
-                    .addComponent(utilCheckBox)
-                    .addComponent(xmlcheckBox))
-                .addPreferredGap(ComponentPlacement.UNRELATED)
-                .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addGap(18)
-                .addGroup(groupLayout
-                    .createParallelGroup(Alignment.BASELINE)
-                    .addComponent(scanFilesBtn)
-                    .addComponent(exportFilesBtn)
-                    .addComponent(openPathBtn))
-                .addGap(34)));
-        setLayout(groupLayout);
+        setupLayout();
 
         r20Exporter = new ExporterR20();
         r16Exporter = new ExporterR16();
 
-        filldata();
+        setUpListeners();
         
         //updateBotListBtn();
                 
     }
 
-    private void filldata(){
+    private void setupLayout() {
+		// TODO Auto-generated method stub
+    	 GroupLayout groupLayout = new GroupLayout(this);
+         groupLayout.setHorizontalGroup(groupLayout
+             .createParallelGroup(Alignment.LEADING)
+             .addGroup(groupLayout
+                 .createSequentialGroup()
+                 .addGroup(groupLayout
+                     .createParallelGroup(Alignment.LEADING)
+                     .addGroup(groupLayout
+                         .createSequentialGroup()
+                         .addGap(91)
+                         .addComponent(lblBot_1)
+                         .addGap(5)
+                         .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
+                     .addGroup(groupLayout
+                         .createSequentialGroup()
+                         .addGap(85)
+                         .addComponent(label)
+                         .addGap(5)
+                         .addComponent((JComponent)datePicker,GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
+                         // .addComponent(dateField, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+                         // .addGap(5)
+                         // .addComponent(btnPickdate, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+                     .addGroup(groupLayout
+                         .createSequentialGroup()
+                         .addGap(91)
+                         .addComponent(lblBot)
+                         .addGap(5)
+                         .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+                         .addGap(5)
+                         .addComponent(updateBotListBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE))
+                     .addGroup(groupLayout
+                         .createSequentialGroup()
+                         .addComponent(xmlcheckBox, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
+                         .addPreferredGap(ComponentPlacement.UNRELATED)
+                         .addComponent(nlogcheckBox)
+                         .addComponent(utilCheckBox)
+                         .addComponent(qascriptCheckBox))
+                     .addGroup(groupLayout
+                         .createSequentialGroup()
+                         .addComponent(scrollPane, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                     .addGroup(groupLayout
+                         .createSequentialGroup()
+                         .addGap(90)
+                         .addComponent(scanFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+                         .addGap(18)
+                         .addComponent(exportFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+                         .addGap(18)
+                         .addComponent(openPathBtn,GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)))));
+
+         groupLayout.setVerticalGroup(groupLayout
+             .createParallelGroup(Alignment.LEADING)
+             .addGroup(groupLayout
+                 .createSequentialGroup()
+                 .addGap(6)
+                 .addGroup(groupLayout
+                     .createParallelGroup(Alignment.CENTER)
+                     .addComponent(lblBot_1)
+                     .addComponent(releaseComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                 .addGap(6)
+                 .addGroup(groupLayout
+                     .createParallelGroup(Alignment.CENTER)
+                     .addComponent(label)
+                     .addComponent((JComponent)datePicker))
+                     // .addComponent(dateField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                     // .addComponent(btnPickdate))
+                 .addGap(6)
+                 .addGroup(groupLayout
+                     .createParallelGroup(Alignment.CENTER)
+                     .addComponent(lblBot)
+                     .addComponent(botlistComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                     .addComponent(updateBotListBtn))
+                 .addGap(6)
+                 .addGroup(groupLayout
+                     .createParallelGroup(Alignment.CENTER)
+                     .addComponent(nlogcheckBox)
+                     .addComponent(utilCheckBox)
+                     .addComponent(xmlcheckBox)
+                     .addComponent(qascriptCheckBox))
+                 .addPreferredGap(ComponentPlacement.UNRELATED)
+                 .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                 .addGap(18)
+                 .addGroup(groupLayout
+                     .createParallelGroup(Alignment.BASELINE)
+                     .addComponent(scanFilesBtn)
+                     .addComponent(exportFilesBtn)
+                     .addComponent(openPathBtn))
+                 .addGap(34)));
+         setLayout(groupLayout);
+	}
+
+	private void setUpListeners(){
         EventQueue.invokeLater(new Runnable(){
                 @Override
                 public void run(){
@@ -295,10 +304,11 @@ public class ExporterPanel extends JPanel {
             
                     Exporter exporter = getSelectedExporter();
                     Collection<File> list = exporter.getExportableFiles(botName, 
-                        xmlcheckBox.isSelected(),
-                        nlogcheckBox.isSelected(),
-                        utilCheckBox.isSelected(),
-                        startDate);
+                    		startDate,
+                    		xmlcheckBox.isSelected(),
+                    		nlogcheckBox.isSelected(),
+                    		utilCheckBox.isSelected(),
+                    		qascriptCheckBox.isSelected());
                     tablepanel.setData(list);
                 }
             });
