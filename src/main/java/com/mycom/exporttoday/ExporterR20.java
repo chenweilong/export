@@ -271,9 +271,7 @@ public class ExporterR20 implements Exporter {
         //qa script file
         if(qascript){
         	
-        	logger.debug("c:\\Repository\\qag\\Bot\\QA\\Boryi\\QaScripts\\" + file.getParentFile().getName());
-        	
-        	Collection<File> qafiles = getFilesChangedInDir("c:\\Repository\\qag\\Bot\\QA\\Boryi\\QaScripts\\" + file.getParentFile().getName(), 
+        	Collection<File> qafiles = getFilesChangedInDir("c:\\Repository\\qag\\Bot\\QA\\",
         			new WildcardFileFilter("*" + botName + "*",IOCase.INSENSITIVE), 
         			TrueFileFilter.INSTANCE,
         			startDate);
