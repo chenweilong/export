@@ -136,6 +136,7 @@ public class ExporterR20Test
 
         Collection<String> botNames = exporter.getBotNamesChanged(CommonUtils.getToday());
         
+        
         assertTrue(botNames.contains("TestBot"));
 
     }
@@ -150,6 +151,13 @@ public class ExporterR20Test
         		CommonUtils.getToday(),
         		new boolean[]{false,false,false});
         
+        for(File f:files){
+        	System.out.println(f);
+        }
+        System.out.println("==========");
+        for(File f:botFiles){
+        	System.out.println(f);
+        }
         assertEquals(files.size(),botFiles.size());
         
     }
@@ -177,7 +185,7 @@ public class ExporterR20Test
         
         botFiles.add(file);
         
-        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Retaillisting_TB_ABCDEFG.regex");
+        file = new File("C:\\Repository\\qag\\Bot\\Releases\\R20\\APP\\Majestic.Bot.Job\\RegexFiles\\Retaillisting_TBot_ABCDEFG.regex");
 
         try{
             FileUtils.touch(file);

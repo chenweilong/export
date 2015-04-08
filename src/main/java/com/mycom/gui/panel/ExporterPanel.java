@@ -16,6 +16,7 @@ import org.apache.commons.io.*;
 import org.apache.commons.lang3.*;
 
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JCheckBox;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import org.jdatepicker.*;
@@ -31,6 +32,8 @@ public class ExporterPanel extends JPanel {
     private JCheckBox nlogcheckBox;
     private JCheckBox utilCheckBox;
     private JCheckBox qascriptCheckBox;
+    private JCheckBox fixedFileCheckBox;
+    private JCheckBox appconfigCheckBox;
     private JFrame textFrame;
     private JTextArea jTextAreaInsidetextFrame;
     private Exporter r20Exporter;
@@ -47,6 +50,7 @@ public class ExporterPanel extends JPanel {
     private JScrollPane scrollPane;
     private JButton exportFilesBtn;
     private JDatePicker datePicker;
+	
     
     /**
      * 
@@ -80,6 +84,10 @@ public class ExporterPanel extends JPanel {
         utilCheckBox = new JCheckBox("include utils", false);
         
         qascriptCheckBox = new JCheckBox("qa script",false);
+        
+        fixedFileCheckBox = new JCheckBox("fixed file",true);
+        
+        appconfigCheckBox = new JCheckBox("appconfig",false);
         
         scanFilesBtn = new JButton("重新扫描");
 
@@ -140,7 +148,9 @@ public class ExporterPanel extends JPanel {
                          .addPreferredGap(ComponentPlacement.UNRELATED)
                          .addComponent(nlogcheckBox)
                          .addComponent(utilCheckBox)
-                         .addComponent(qascriptCheckBox))
+                         .addComponent(qascriptCheckBox)
+                         .addComponent(fixedFileCheckBox)
+                         .addComponent(appconfigCheckBox))
                      .addGroup(groupLayout
                          .createSequentialGroup()
                          .addComponent(scrollPane, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -181,7 +191,9 @@ public class ExporterPanel extends JPanel {
                      .addComponent(nlogcheckBox)
                      .addComponent(utilCheckBox)
                      .addComponent(xmlcheckBox)
-                     .addComponent(qascriptCheckBox))
+                     .addComponent(qascriptCheckBox)
+                     .addComponent(fixedFileCheckBox)
+                     .addComponent(appconfigCheckBox))
                  .addPreferredGap(ComponentPlacement.UNRELATED)
                  .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                  .addGap(18)
@@ -308,7 +320,8 @@ public class ExporterPanel extends JPanel {
                     		xmlcheckBox.isSelected(),
                     		nlogcheckBox.isSelected(),
                     		utilCheckBox.isSelected(),
-                    		qascriptCheckBox.isSelected());
+                    		qascriptCheckBox.isSelected(),
+                    		appconfigCheckBox.isSelected());
                     tablepanel.setData(list);
                 }
             });
@@ -324,6 +337,13 @@ public class ExporterPanel extends JPanel {
             
             Exporter exporter = getSelectedExporter();
             String result = exporter.exportFiles(list,botName);
+            
+            String edition = (String)releaseComboBox.getSelectedItem();
+            
+            if(edition.equals("R20") && fixedFileCheckBox.isSelected()){
+            	String target = "D:\\today\\" + CommonUtils.sdf.format(CommonUtils.getToday()) + "\\" + botName + "\\";
+                CommonUtils.fixSectorFiles(list,target,botName);
+            }             
                         
             if  (StringUtils.isEmpty(result)) {
                 JOptionPane.showMessageDialog(null, "nothing exported!");
