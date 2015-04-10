@@ -34,6 +34,7 @@ public class ExporterPanel extends JPanel {
     private JCheckBox qascriptCheckBox;
     private JCheckBox fixedFileCheckBox;
     private JCheckBox appconfigCheckBox;
+    private JCheckBox projectCheckBox;
     private JFrame textFrame;
     private JTextArea jTextAreaInsidetextFrame;
     private Exporter r20Exporter;
@@ -85,9 +86,11 @@ public class ExporterPanel extends JPanel {
         
         qascriptCheckBox = new JCheckBox("qa script",false);
         
-        fixedFileCheckBox = new JCheckBox("fixed file",true);
+        fixedFileCheckBox = new JCheckBox("fix xml and nlog",true);
         
         appconfigCheckBox = new JCheckBox("appconfig",false);
+        
+        projectCheckBox = new JCheckBox("project files",false);
         
         scanFilesBtn = new JButton("重新扫描");
 
@@ -149,8 +152,8 @@ public class ExporterPanel extends JPanel {
                          .addComponent(nlogcheckBox)
                          .addComponent(utilCheckBox)
                          .addComponent(qascriptCheckBox)
-                         .addComponent(fixedFileCheckBox)
-                         .addComponent(appconfigCheckBox))
+                         .addComponent(appconfigCheckBox)
+                         .addComponent(projectCheckBox))
                      .addGroup(groupLayout
                          .createSequentialGroup()
                          .addComponent(scrollPane, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -160,6 +163,7 @@ public class ExporterPanel extends JPanel {
                          .addComponent(scanFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
                          .addGap(18)
                          .addComponent(exportFilesBtn, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+                         .addComponent(fixedFileCheckBox)
                          .addGap(18)
                          .addComponent(openPathBtn,GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)))));
 
@@ -192,8 +196,8 @@ public class ExporterPanel extends JPanel {
                      .addComponent(utilCheckBox)
                      .addComponent(xmlcheckBox)
                      .addComponent(qascriptCheckBox)
-                     .addComponent(fixedFileCheckBox)
-                     .addComponent(appconfigCheckBox))
+                     .addComponent(appconfigCheckBox)
+                     .addComponent(projectCheckBox))
                  .addPreferredGap(ComponentPlacement.UNRELATED)
                  .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                  .addGap(18)
@@ -201,6 +205,7 @@ public class ExporterPanel extends JPanel {
                      .createParallelGroup(Alignment.BASELINE)
                      .addComponent(scanFilesBtn)
                      .addComponent(exportFilesBtn)
+                     .addComponent(fixedFileCheckBox)
                      .addComponent(openPathBtn))
                  .addGap(34)));
          setLayout(groupLayout);
@@ -321,7 +326,8 @@ public class ExporterPanel extends JPanel {
                     		nlogcheckBox.isSelected(),
                     		utilCheckBox.isSelected(),
                     		qascriptCheckBox.isSelected(),
-                    		appconfigCheckBox.isSelected());
+                    		appconfigCheckBox.isSelected(),
+                    		projectCheckBox.isSelected());
                     tablepanel.setData(list);
                 }
             });

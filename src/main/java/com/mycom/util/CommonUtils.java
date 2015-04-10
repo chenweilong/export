@@ -7,8 +7,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
 import java.text.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class CommonUtils{
+    private static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
+    
     
     private CommonUtils(){}
     
@@ -17,9 +21,10 @@ public final class CommonUtils{
     public static void copyFilesToDirectory(Collection<File> list, String target){
         //copy the exported file to the target directory
         File targetDir = new File(target);
-        if(!targetDir.exists()){
-            targetDir.mkdirs();
+        if(targetDir.exists()) {
+            FileUtils.deleteQuietly(targetDir);
         }
+        targetDir.mkdirs();
         try{
             
             if(filesHasSameName(list)){
@@ -32,10 +37,16 @@ public final class CommonUtils{
                 }
 
                 for(int i = 1 ; i<groupedFiles.length; i++){
+                    logger.debug("" + groupedFiles[i].length);
+                    String[] targetFolders = getDifferentFolderName(groupedFiles[i]);
+                    
+                    logger.debug("folder" + targetFolders.length);
+                    logger.debug("length:" + groupedFiles[i].length);
                     for(int j = 0; j<groupedFiles[i].length; j++){
+                        
                         if(groupedFiles[i][j] != null){
                             try{
-                                FileUtils.copyFileToDirectory(groupedFiles[i][j], new File(target , groupedFiles[i][j].getParentFile().getName()));
+                                FileUtils.copyFileToDirectory(groupedFiles[i][j], new File(target , targetFolders[j]));
                             }
                             catch(Exception e){
                                 e.printStackTrace();
@@ -53,6 +64,39 @@ public final class CommonUtils{
             e.printStackTrace();
         }
 
+    }
+
+    public static String[] getDifferentFolderName(File[] files) {
+        
+        File file1 = files[0].getParentFile();
+        String targetFolder[] = new String[files.length];
+        File[] parentFiles = files.clone();
+        String commonpath = file1.getName();
+        while(file1!= null) {
+            for(int i = 0;i<files.length;i++) {
+                if(files[i]!=null) {
+
+                    if(targetFolder[i] == null) {
+                        parentFiles[i] = files[i].getParentFile();
+                        targetFolder[i] = parentFiles[i].getName();
+                    } else {
+                        parentFiles[i] = parentFiles[i].getParentFile();
+                        targetFolder[i] = parentFiles[i].getName() + "-" + targetFolder[i];
+                    }
+
+                    if( !parentFiles[i].getName().contains(commonpath)) {
+                        logger.debug(targetFolder.length + "");
+                        return targetFolder;
+                    }
+
+                }
+            }
+
+            file1 = file1.getParentFile();
+            commonpath = file1.getName();
+        }
+        
+        return targetFolder;
     }
 
     public static File[][] groupFileBySameName(Collection<File> list){
